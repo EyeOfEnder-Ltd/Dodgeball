@@ -1,0 +1,208 @@
+name: Dodgeball
+main: com.eyeofender.dodgeball.Dodgeball
+version: 1.2.6
+authors: [LinearLogic, LimeByte]
+
+softdepend: [MassAPI]
+database: true
+
+commands:
+    dodge:
+        description: Root command for help and plugin info
+        usage: /dodge [help/reload/version]
+        aliases: [dodgeball, db]
+    spawn:
+        description: Teleports to the global lobby
+        usage: /spawn
+        aliases: [lobby, globby, globallobby]
+    create:
+        description: Creates a new arena
+        usage: /create <arena>
+        aliases: add
+    delete:
+        description: Deletes an arena
+        usage: /delete <arena>
+        aliases: remove
+    save:
+        description: Saves changes to one or all arenas
+        usage: /save <arena/all>
+    rename:
+        description: Renames an arena
+        usage: /rename <arena> <name>
+    join:
+        description: Attempts to join the specified arena
+        usage: /join <arena>
+    spectate:
+        description: Joins the specified arena as a spectator
+        usage: /spectate <arena>
+    leave:
+        description: Leaves the current arena
+        usage: /leave
+    team:
+        description: Attempts to join the specified team
+        usage: /team <team>
+    setgloballobby:
+        description: Places the global lobby at the player's location
+        usage: /setgloballoby
+    setlobby:
+        description: Places the lobby of the specified arena at the player's location
+        usage: /setlobby <arena>
+    addspawn:
+        description: Adds a spawnpoint to the specified team
+        usage: /addspawn <arena> <team>
+    clearspawns:
+        description: Clears the spawns of the specified team
+        usage: /clearspawns <arena> <team>
+    setline:
+        description: Sets a boundary in the specified arena (use twice for positions 1 and 2, respectively) or discards the current selection
+        usage: /setline <arena> [cancel]
+    clearlines:
+        description: Removes all the boundaries in the specified arena
+        usage: /clearlines <arena>
+    arenas:
+        description: Displays a list of arenas group by game stage
+        usage: /arenas
+        aliases: arenalist
+    arenainfo:
+        description: Displays information about the provided arena
+        usage: /arenainfo <arenea>
+    players:
+        description: Displays a list of the players in an arena
+        usage: /players <arena>
+        aliases: playerlist
+    search:
+        description: Looks up the arena in which the player with the specified username is currently playing
+        usage: /search <username>
+    eject:
+        description: Kicks the provided user from his or her current arena, or kicks all players from the specified arena
+        usage: /eject <player>/(all <arena>)
+    fstart:
+        description: Forces the round in the provided arena to start in the specified number of seconds
+        usage: /fstart <arena> <delay>
+        aliases: forcestart
+    fstop:
+        description: Forces the round in the provided arena to stop in the specified number of seconds
+        usage: /fstop <arena> <delay>
+        aliases: forcestop
+    addball:
+        description: Adds a ball to the specified arena
+        usage: /addball <arena> [team]
+    clearballs:
+        description: Clears all balls from the specified arena
+        usage: /clearballs <arena>
+    friendlyfire:
+        description: Toggles friendly fire in the specified arena
+        usage: /friendlyfire <arena> <on/off>
+    setballlimit:
+        description: Sets the limit on the number of ball an arena can contain
+        usage: /setballlimit <arena> <limit>
+    setlimit:
+        description: Sets the player cap of an arena
+        usage: /setlimit <arena> <limit>
+    setstartcount:
+        description: Sets the number of players needed for a round to automatically start
+        usage: /setstartcount <arena> <count>
+    
+permissions:
+    dodgeball.lives.vip:
+        description: Access to the vip line of lives settings
+        default: false
+    dodgeball.join:
+        description: Permission to join and play in dodgeball arenas
+        default: true
+    dodgeball.join.iron:
+        description: Permission to join arenas that have reached maximum capacity
+        default: false
+    dodgeball.join.gold:
+        description: Permission to join arenas that have reached maximum capacity
+        default: op
+    dodgeball.join.diamond:
+        description: Permission to join arenas that have reached maximum capacity
+        default: false
+    dodgeball.spectate:
+        description: Permission to join an arena as a spectator
+        default: true
+    dodgeball.reload:
+        description: Permission to reload the config
+        default: op
+    dodgeball.search:
+        description: Permission to lookup the arena in which a player is currently playing
+        default: true
+    dodgeball.setgloballobby:
+        description: Permission to place the global lobby
+        default: op
+    dodgeball.arena.allowcommands:
+        description: Permission to issue non-Dodgeball commands while in an arena
+        default: op
+    dodgeball.arena.create:
+        description: Permission to create new arenas
+        default: op
+    dodgeball.arena.delete:
+        description: Permission to delete arenas
+        default: op
+    dodgeball.arena.save:
+        description: Permission to save changes to one or all arenas
+        default: op
+    dodgeball.arena.rename:
+        description: Permission to rename an arena
+        default: op
+    dodgeball.arena.team:
+        description: Permission to preselect a team while the round in an arena is starting
+        default: true
+    dodgeball.arena.setlobby:
+        description: Permission to set arena lobby locations
+        default: op
+    dodgeball.arena.addspawn:
+        description: Permission to add a team spawn to an arena
+        default: op
+    dodgeball.arena.clearspawns:
+        description: Permission to clear the spawns of one or all teams in an arena
+        default: op
+    dodgeball.arena.setline:
+        description: Permission to set arena boundary lines
+        default: op        
+    dodgeball.arena.clearlines:
+        description: Permission to clear all boundary lines within an arena
+        default: op
+    dodgeball.arena.list:
+        description: Permission to list arenas
+        default: true
+    dodgeball.arena.info:
+        description: Permission to view information about an arena
+        default: true
+    dodgeball.arena.playerlist:
+        description: Permission to view the players in an arena
+        default: true
+    dodgeball.arena.eject:
+        description: Permission to kick a player from an arena
+        default: op
+    dodgeball.arena.forcestart:
+        description: Permission to force a match to start
+        default: op
+    dodgeball.arena.forcestop:
+        description: Permission to force a match to end
+        default: op
+    dodgeball.arena.balls.add:
+        description: Permission to spawn a dodgeball into an arena
+        default: op
+    dodgeball.arena.balls.clear:
+        description: Permission to clear the balls from an arena
+        default: op
+    dodgeball.arena.togglefriendlyfire:
+        description: Permission to toggle whether friendly fire is enabled for an arena
+        default: op
+    dodgeball.arena.balls.setlimit:
+        description: Permission to set the limit on the number of balls an arena can contain
+        default: op
+    dodgeball.arena.setlimit:
+        description: Permission to set the player cap of an arena
+        default: op
+    dodgeball.arena.setstartcount:
+        description: Permission to set the number of players needed in an arena for a round to automatically start
+        default: op
+    dodgeball.arena.signs:
+        description: Permission to place and break arena signs
+        default: op
+    dodgeball.arena.build:
+        description: Permission to place and break blocks while playing in an arena
+        default: op

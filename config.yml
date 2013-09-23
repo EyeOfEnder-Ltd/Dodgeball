@@ -1,0 +1,62 @@
+save-arenas-on-edit: false
+broadcast-on-hit: false
+donation-listener-port: 25564
+max-dodgeballs-held: 5
+lives-standard:
+    starting: 3
+    max: 5
+    lost-on-death: 1
+    gained-on-hit: 0
+lives-vip:
+    starting: 6
+    max: 10
+    lost-on-death: 1
+    gained-on-hit: 0
+timers:
+    starting: 60
+    game: 300
+    arena-menu-update-interval: 15
+global-lobby:
+    world: world
+    x: 100
+    y: 66
+    z: 100
+    yaw: 0
+    pitch: 0
+arena-menus:
+    Ice Rink:
+        item-id: 79
+        arenas:
+            - IceRink1
+            - IceRink2
+            - IceRink3
+            - IceRink4
+            - IceRink5
+            - IceRink6
+    Garden:
+        item-id: 6
+        arenas:
+            - Garden_1
+            - Garden_2
+            - Garden_3
+            - Garden_4
+            - Garden_5
+            - Garden_6
+    Nether Madness:
+        item-id: 87
+        arenas:
+            - NetherMadness1
+            - NetherMadness2
+            - NetherMadness3
+            - NetherMadness4
+            - NetherMadness5
+            - NetherMadness6
+    Gym:
+        item-id: 45
+        arenas:
+            - Gym_1
+            - Gym_2
+            - Gym_3
+            - Gym_4
+            - Gym_5
+            - Gym_6
