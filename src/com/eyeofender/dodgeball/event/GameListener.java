@@ -192,21 +192,25 @@ public class GameListener implements Listener {
         if (player.getInventory().contains(event.getItem().getItemStack(), Dodgeball.instance.getConfig().getInt("max-dodgeballs-held"))) event.setCancelled(true);
     }
 
-    @EventHandler(ignoreCancelled = true)
-    public void onMove(PlayerMoveEvent event) {
-        final Player player = event.getPlayer();
+    private boolean canMove(Player player, Location from, Location to) {
+        if (from.getWorld() != to.getWorld()) return true;
+        if (from.getBlockX() == to.getBlockX() && from.getBlockY() == to.getBlockY() && from.getBlockZ() == to.getBlockZ()) return true;
+
         Arena arena = Dodgeball.instance.getGameManager().getArena(player);
-        if (arena == null || arena.getStage() != 2) return;
-        if (arena.isLocationInMidline(event.getTo())) {
-            event.setCancelled(true);
-            Vector trajectory = event.getTo().toVector().subtract(event.getFrom().toVector());
-            Location bounceBack = arena.asBlockLocation(event.getFrom().add(-Math.signum(trajectory.getX()), 0, -Math.signum(trajectory.getZ())));
-            final Location destination = arena.isLocationInMidline(bounceBack) ? arena.asBlockLocation(event.getFrom()) : bounceBack;
-            Dodgeball.instance.getServer().getScheduler().scheduleSyncDelayedTask(Dodgeball.instance, new Runnable() {
-                public void run() {
-                    player.teleport(destination);
-                }
-            }, 1L);
+        if (arena == null || arena.getStage() != 2) return true;
+
+        return !arena.isLocationInMidline(to);
+    }
+
+    @EventHandler
+    public void onMove(PlayerMoveEvent event) {
+        Player player = event.getPlayer();
+        if (!canMove(player, event.getFrom(), event.getTo())) {
+            Location newLoc = event.getFrom();
+            newLoc.setX(newLoc.getBlockX() + 0.5);
+            newLoc.setY(newLoc.getBlockY());
+            newLoc.setZ(newLoc.getBlockZ() + 0.5);
+            event.setTo(newLoc);
         }
     }
 
