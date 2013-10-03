@@ -89,19 +89,21 @@ public class GameListener implements Listener {
         if (!(event.getEntity() instanceof Player) || event.getCause() != DamageCause.PROJECTILE || !(event.getDamager() instanceof Snowball || event.getDamager() instanceof Arrow)) return;
         Projectile proj = (Projectile) event.getDamager();
         Player defender = (Player) event.getEntity();
+        ProjectileType previous = null;
+
+        if (proj instanceof Snowball) previous = trackedProjectiles.put(proj.getUniqueId(), ProjectileType.DOOMED);
+
         if (Dodgeball.instance.getGameManager().getArenaFromSpectator(defender) != null) {
             Projectile newProj = (Projectile) proj.getWorld().spawnEntity(proj.getLocation().add(proj.getVelocity().normalize().multiply(4)), EntityType.SNOWBALL);
             newProj.setVelocity(proj.getVelocity());
             newProj.setShooter(proj.getShooter());
-            if (proj instanceof Snowball) {
-                ProjectileType previous = trackedProjectiles.put(proj.getUniqueId(), ProjectileType.DOOMED);
-                if (previous != null) trackedProjectiles.put(newProj.getUniqueId(), previous);
-            }
+            if (previous != null) trackedProjectiles.put(newProj.getUniqueId(), previous);
             return;
         }
+
         final Arena defenderArena = Dodgeball.instance.getGameManager().getArena(defender);
         if (defenderArena == null || defenderArena.getStage() != 2) return;
-        Player shooter = (Player) ((Projectile) event.getDamager()).getShooter();
+        Player shooter = (Player) proj.getShooter();
         Arena attackerArena = Dodgeball.instance.getGameManager().getArena(shooter);
         if (attackerArena == null || attackerArena != defenderArena) return;
         if (!defenderArena.isFriendlyFireEnabled() && defenderArena.getTeam(defender).equals(defenderArena.getTeam(shooter))) return;
@@ -121,6 +123,7 @@ public class GameListener implements Listener {
 
         stats = database.getStats(shooter, false);
         stats.setTotalHits(stats.getTotalHits() + 1);
+        database.saveStats(stats);
 
         int gain = Dodgeball.instance.getConfig().getInt((defender.hasPermission("dodgeball.lives.vip") ? "lives-vip" : "lives-standard") + ".gained-on-hit");
         if (ActivePerks.get(shooter).isActive(Perk.LIFE_GAINED_ON_HIT)) gain += 1;
@@ -135,6 +138,7 @@ public class GameListener implements Listener {
             return;
         }
         defenderCopy.setHealth(health);
+        if (previous != ProjectileType.DOOMED || previous != ProjectileType.AIRSTRIKE) dropDodgeball(defenderArena, proj.getLocation());
         Dodgeball.instance.getServer().getScheduler().scheduleSyncDelayedTask(Dodgeball.instance, new Runnable() {
             public void run() {
                 defenderCopy.teleport(defenderArena.getRandomSpawnPoint(defenderArena.getTeam(defenderCopy)));
@@ -245,11 +249,10 @@ public class GameListener implements Listener {
 
     @EventHandler
     public void onProjectileHit(ProjectileHitEvent event) {
-        if (!(event.getEntity() instanceof Snowball) || !(event.getEntity().getShooter() instanceof Player)) {
-            return;
-        }
+        if (!(event.getEntity() instanceof Snowball) || !(event.getEntity().getShooter() instanceof Player)) return;
         Player player = (Player) event.getEntity().getShooter();
         Arena arena = Dodgeball.instance.getGameManager().getArena(player);
+
         if (arena == null || arena.getStage() != 2) return;
         ProjectileType type = trackedProjectiles.remove(event.getEntity().getUniqueId());
         if (type == ProjectileType.DOOMED) return;
@@ -262,14 +265,7 @@ public class GameListener implements Listener {
         Stats stats = Dodgeball.instance.getDatabaseConnection().getStats(player, false);
         stats.setTotalMisses(stats.getTotalMisses() + 1);
 
-        ItemStack ball = dodgeball.clone();
-        ItemMeta meta = ball.getItemMeta();
-        List<String> lore = new ArrayList<String>();
-        lore.add("Arena:");
-        lore.add(arena.getName());
-        meta.setLore(lore);
-        ball.setItemMeta(meta);
-        event.getEntity().getWorld().dropItem(event.getEntity().getLocation(), ball);
+        dropDodgeball(arena, event.getEntity().getLocation());
     }
 
     private void launchAirstrike(LivingEntity shooter, Location target, int radiusX, int radiusZ) {
@@ -294,6 +290,17 @@ public class GameListener implements Listener {
         double x = vector.getX() * cos - vector.getZ() * sin;
         double z = vector.getX() * sin + vector.getZ() * cos;
         return vector.setX(x).setZ(z);
+    }
+
+    private void dropDodgeball(Arena arena, Location location) {
+        ItemStack ball = dodgeball.clone();
+        ItemMeta meta = ball.getItemMeta();
+        List<String> lore = new ArrayList<String>();
+        lore.add("Arena: " + arena.getName());
+        meta.setLore(lore);
+        ball.setItemMeta(meta);
+
+        location.getWorld().dropItem(location, ball);
     }
 
     /**

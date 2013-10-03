@@ -716,11 +716,14 @@ public class Arena implements Serializable {
 
                         Stats stats = database.getStats(player, false);
                         stats.setGamesPlayed(stats.getGamesPlayed() + 1);
+
                         if (getTeam(player) == leadingTeam) {
                             stats.setGamesWon(stats.getGamesWon() + 1);
                         } else {
                             stats.setGamesLost(stats.getGamesLost() + 1);
                         }
+
+                        database.saveStats(stats);
                     }
 
                     Dodgeball.instance.getServer().broadcastMessage(Dodgeball.prefix + ChatColor.GOLD + "The " + leadingTeam.toString() + " team emerges victorious from the arena: " + name + "!");

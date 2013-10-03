@@ -100,6 +100,7 @@ public class GeneralListener implements Listener {
                 }
             case RIGHT_CLICK_AIR:
                 ItemStack holding = event.getItem();
+                if (holding == null) return;
 
                 if (!holding.hasItemMeta() || !holding.getItemMeta().hasDisplayName()) return;
                 if (holding.getItemMeta().getDisplayName().substring(2).equals("Open Arena Menu")) {

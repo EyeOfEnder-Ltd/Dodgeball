@@ -73,9 +73,12 @@ public class DatabaseConnection {
             stats.setTotalHits(0);
             stats.setTotalMisses(0);
             stats.setTotalHarm(0);
-            stats.setLastSeen(null);
+            stats.setLastSeen(new java.util.Date());
             plugin.getDatabase().save(stats);
             statsCache.put(stats.getName(), stats);
+        } else {
+            stats.setLastSeen(new java.util.Date());
+            saveStats(stats);
         }
 
         return stats;
