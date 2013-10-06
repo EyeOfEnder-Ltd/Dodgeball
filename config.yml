@@ -7,11 +7,6 @@ lives-standard:
     max: 5
     lost-on-death: 1
     gained-on-hit: 0
-lives-vip:
-    starting: 6
-    max: 10
-    lost-on-death: 1
-    gained-on-hit: 0
 timers:
     starting: 60
     game: 300

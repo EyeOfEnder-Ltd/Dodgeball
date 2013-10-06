@@ -119,11 +119,9 @@ public class GameListener implements Listener {
 
         Stats stats = database.getStats(defender, false);
         stats.setTotalHarm(stats.getTotalHarm() + 1);
-        database.saveStats(stats);
 
         stats = database.getStats(shooter, false);
         stats.setTotalHits(stats.getTotalHits() + 1);
-        database.saveStats(stats);
 
         int gain = Dodgeball.instance.getConfig().getInt((defender.hasPermission("dodgeball.lives.vip") ? "lives-vip" : "lives-standard") + ".gained-on-hit");
         if (ActivePerks.get(shooter).isActive(Perk.LIFE_GAINED_ON_HIT)) gain += 1;

@@ -39,6 +39,7 @@ import com.eyeofender.dodgeball.game.perks.FiringMode;
 import com.eyeofender.dodgeball.location.Region;
 import com.eyeofender.dodgeball.location.SerializableLocation;
 import com.eyeofender.massapi.database.MassDatabase;
+import com.eyeofender.massapi.database.table.Membership;
 
 public class Arena implements Serializable {
 
@@ -336,9 +337,14 @@ public class Arena implements Serializable {
 
     public void addPlayer(Player player, Team team, boolean updateSigns, boolean updateScoreboard) {
         if (team == null) return;
-        player.setMaxHealth(Dodgeball.instance.getConfig().getInt((player.hasPermission("dodgeball.lives.vip") ? "lives-vip" : "lives-standard") + ".max") * 2.0);
-        player.setHealth(Dodgeball.instance.getConfig().getInt((player.hasPermission("dodgeball.lives.vip") ? "lives-vip" : "lives-standard") + ".starting") * 2.0);
+        Membership member = MassDatabase.getMembership(player);
+        double maxHealth = Dodgeball.instance.getConfig().getInt("lives-standard.max") * 2.0;
+        double health = Dodgeball.instance.getConfig().getInt("lives-standard.starting") * 2.0;
+
+        player.setMaxHealth(member.getPriority() > 0 ? maxHealth + 2 : maxHealth);
+        player.setHealth(member.getPriority() > 0 ? health + 2 : health);
         player.setFoodLevel(20);
+
         players.put(player.getName(), team);
         if (!team.equals(Team.NONE)) player.getInventory().setHelmet(new ItemStack(Material.WOOL, 1, team.woolData));
         if (updateScoreboard) updateScoreboard();
