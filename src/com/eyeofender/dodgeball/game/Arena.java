@@ -383,8 +383,9 @@ public class Arena implements Serializable {
                 broadcast("The " + team.toString().toLowerCase() + " team has been eliminated!");
             }
             if (getActiveTeams().size() == 1) {
-                Dodgeball.instance.getServer().broadcastMessage(
-                        Dodgeball.prefix + ChatColor.GOLD + "The " + getActiveTeams().iterator().next().toString() + " team emerges victorious from the arena: " + name + "!");
+                Team winningTeam = getActiveTeams().iterator().next();
+                Dodgeball.instance.getServer().broadcastMessage(Dodgeball.prefix + ChatColor.GOLD + "The " + winningTeam.toString() + " team emerges victorious from the arena: " + name + "!");
+
                 Dodgeball.instance.getServer().getScheduler().scheduleSyncDelayedTask(Dodgeball.instance, new Runnable() {
                     public void run() {
                         reset();
@@ -721,14 +722,6 @@ public class Arena implements Serializable {
                         if (player == null) continue;
 
                         Stats stats = database.getStats(player, false);
-                        stats.setGamesPlayed(stats.getGamesPlayed() + 1);
-
-                        if (getTeam(player) == leadingTeam) {
-                            stats.setGamesWon(stats.getGamesWon() + 1);
-                        } else {
-                            stats.setGamesLost(stats.getGamesLost() + 1);
-                        }
-
                         database.saveStats(stats);
                     }
 
