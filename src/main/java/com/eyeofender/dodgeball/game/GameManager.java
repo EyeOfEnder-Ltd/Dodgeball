@@ -29,7 +29,8 @@ public class GameManager {
     private ArrayList<Arena> arenas = new ArrayList<Arena>();
     private Location globalLobby;
 
-    private boolean updatingArenaMenus; // Whether the arena menus have already been updated in this tick
+    private boolean updatingArenaMenus; // Whether the arena menus have already
+                                        // been updated in this tick
     private HashMap<String, Inventory> arenaMenus = new HashMap<String, Inventory>();
 
     public GameManager() {
@@ -45,7 +46,8 @@ public class GameManager {
         meta = perkMenuLoader.getItemMeta();
         meta.setDisplayName(ChatColor.GOLD + "Open Perk Menu");
         perkMenuLoader.setItemMeta(meta);
-        updatingArenaMenus = true; // Prevents initial reloadConfig() from throwing an NPE
+        updatingArenaMenus = true; // Prevents initial reloadConfig() from
+                                   // throwing an NPE
     }
 
     public void loadArenas() {
@@ -85,44 +87,35 @@ public class GameManager {
     }
 
     public Arena getArena(String name) {
-        if (name == null)
-            return null;
+        if (name == null) return null;
         for (Arena arena : arenas)
-            if (arena.getName().equalsIgnoreCase(name))
-                return arena;
+            if (arena.getName().equalsIgnoreCase(name)) return arena;
         return null;
     }
 
     public Arena getArena(Player player) {
-        if (player == null)
-            return null;
+        if (player == null) return null;
         for (Arena arena : arenas)
-            if (arena.getTeam(player) != null)
-                return arena;
+            if (arena.getTeam(player) != null) return arena;
         return null;
     }
 
     public Arena getArenaFromSpectator(Player player) {
-        if (player == null)
-            return null;
+        if (player == null) return null;
         for (Arena arena : arenas)
-            if (arena.containsSpectator(player))
-                return arena;
+            if (arena.containsSpectator(player)) return arena;
         return null;
     }
 
     public Arena getArenaFromSignLocation(Location loc) {
-        if (loc == null)
-            return null;
+        if (loc == null) return null;
         for (Arena arena : arenas)
-            if (arena.containsSignLocation(loc))
-                return arena;
+            if (arena.containsSignLocation(loc)) return arena;
         return null;
     }
 
     public boolean addArena(Arena arena) {
-        if (getArena(arena.getName()) != null)
-            return false;
+        if (getArena(arena.getName()) != null) return false;
         arenas.add(arena);
         arena.save();
         return true;
@@ -133,8 +126,7 @@ public class GameManager {
     }
 
     public boolean deleteArena(Arena arena) {
-        if (!removeArena(arena))
-            return false;
+        if (!removeArena(arena)) return false;
         arena.wipeSigns();
         File arenaFile = new File(Dodgeball.instance.getDataFolder() + File.separator + "arenas", arena.getName() + ".arena");
         arenaFile.delete();
@@ -149,15 +141,13 @@ public class GameManager {
         int counter = 0;
         Arena[] matches = new Arena[arenas.size()];
         for (Arena arena : arenas)
-            if (arena.getStage() == stage)
-                matches[counter++] = arena;
+            if (arena.getStage() == stage) matches[counter++] = arena;
         return Arrays.copyOf(matches, counter);
     }
 
     public boolean areAllArenasEmpty() {
         for (Arena arena : arenas)
-            if (arena.getPlayerCount() > 0)
-                return false;
+            if (arena.getPlayerCount() > 0) return false;
         return true;
     }
 
@@ -180,16 +170,14 @@ public class GameManager {
             int arenaCount = 0;
             for (String arenaName : currentSection.getStringList(map + ".arenas")) {
                 Arena arena = getArena(arenaName);
-                if (arena == null)
-                    continue;
+                if (arena == null) continue;
                 ItemStack icon = new ItemStack(Material.WOOL, 1, (short) (arena.getStage() == 0 ? 5 : arena.getStage() == 1 ? 4 : 14));
                 ItemMeta meta = icon.getItemMeta();
                 meta.setDisplayName(ChatColor.AQUA + arenaName);
                 List<String> lore = new ArrayList<String>();
                 lore.add(arena.getStageName());
                 lore.add("Players: " + arena.getPlayerCount() + "/" + arena.getPlayerLimit());
-                if (arena.getStage() == 0)
-                    lore.add(arena.getStartCount() - arena.getPlayerCount() + " more needed to start");
+                if (arena.getStage() == 0) lore.add(arena.getStartCount() - arena.getPlayerCount() + " more needed to start");
                 meta.setLore(lore);
                 icon.setItemMeta(meta);
                 mapMenu.addItem(icon);
@@ -197,7 +185,7 @@ public class GameManager {
             }
             mapMenu.setItem(8, back.clone());
             arenaMenus.put(map, mapMenu);
-            ItemStack icon = new ItemStack(currentSection.getInt(map + ".item-id"));
+            ItemStack icon = new ItemStack(Material.getMaterial(currentSection.getString(map + ".item").toUpperCase().replace('-', '_')));
             ItemMeta meta = icon.getItemMeta();
             meta.setDisplayName(ChatColor.AQUA + map);
             List<String> lore = new ArrayList<String>();
@@ -216,8 +204,7 @@ public class GameManager {
     }
 
     public void updateArenaMenus() {
-        if (updatingArenaMenus)
-            return;
+        if (updatingArenaMenus) return;
         updatingArenaMenus = true;
         Inventory mainMenu = arenaMenus.get("main");
         if (arenaMenus.isEmpty()) // Prevents NPE thrown by line 225
@@ -230,23 +217,21 @@ public class GameManager {
             int arenaCount = 0;
             for (String arenaName : currentSection.getStringList(map + ".arenas")) {
                 Arena arena = getArena(arenaName);
-                if (arena == null)
-                    continue;
+                if (arena == null) continue;
                 ItemStack icon = new ItemStack(Material.WOOL, 1, (short) (arena.getStage() == 0 ? 5 : arena.getStage() == 1 ? 4 : 14));
                 ItemMeta meta = icon.getItemMeta();
                 meta.setDisplayName(ChatColor.AQUA + arenaName);
                 List<String> lore = new ArrayList<String>();
                 lore.add(arena.getStageName());
                 lore.add("Players: " + arena.getPlayerCount() + "/" + arena.getPlayerLimit());
-                if (arena.getStage() == 0)
-                    lore.add(arena.getStartCount() - arena.getPlayerCount() + " more needed to start");
+                if (arena.getStage() == 0) lore.add(arena.getStartCount() - arena.getPlayerCount() + " more needed to start");
                 meta.setLore(lore);
                 icon.setItemMeta(meta);
                 mapMenu.addItem(icon);
                 arenaCount++;
             }
             mapMenu.setItem(8, back.clone());
-            ItemStack icon = new ItemStack(currentSection.getInt(map + ".item-id"));
+            ItemStack icon = new ItemStack(Material.getMaterial(currentSection.getString(map + ".item").toUpperCase().replace('-', '_')));
             ItemMeta meta = icon.getItemMeta();
             meta.setDisplayName(ChatColor.AQUA + map);
             List<String> lore = new ArrayList<String>();
