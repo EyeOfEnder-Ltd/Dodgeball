@@ -1,4 +1,4 @@
 Dodgeball
 =========
 
-Average Steve's vs. GloboCraft!
+TheMass dodgeball minigame.
