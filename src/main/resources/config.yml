@@ -37,7 +37,7 @@ arena-menus:
             - Garden_5
             - Garden_6
     Nether Madness:
-        item-id: netherrack
+        item: netherrack
         arenas:
             - NetherMadness1
             - NetherMadness2
@@ -46,7 +46,7 @@ arena-menus:
             - NetherMadness5
             - NetherMadness6
     Gym:
-        item-id: brick
+        item: brick
         arenas:
             - Gym_1
             - Gym_2
