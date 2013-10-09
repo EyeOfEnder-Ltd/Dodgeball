@@ -308,13 +308,15 @@ public class Arena implements Serializable {
             return false;
         }
         if (players.size() >= playerLimit) {
-            int priority = MassDatabase.getMembership(player).getPriority();
+            Membership membership = MassDatabase.getMembership(player);
+            int priority = membership != null ? membership.getPriority() : 0;
 
             if (priority > 0) {
                 boolean joined = false;
                 for (String name : players.keySet()) {
                     Player toKick = Dodgeball.instance.getServer().getPlayerExact(name);
-                    int kickPriority = MassDatabase.getMembership(toKick).getPriority();
+                    Membership kickMembership = MassDatabase.getMembership(toKick);
+                    int kickPriority = kickMembership != null ? kickMembership.getPriority() : 0;
                     if (toKick == null || kickPriority <= priority) continue;
                     removePlayer(toKick, false, true);
                     toKick.sendMessage(Dodgeball.prefix + "You were kicked from " + ChatColor.YELLOW + name + ChatColor.GRAY + " to make room for a " + ChatColor.GOLD + "premium player"
@@ -337,12 +339,12 @@ public class Arena implements Serializable {
 
     public void addPlayer(Player player, Team team, boolean updateSigns, boolean updateScoreboard) {
         if (team == null) return;
-        Membership member = MassDatabase.getMembership(player);
+        Membership membership = MassDatabase.getMembership(player);
         double maxHealth = Dodgeball.instance.getConfig().getInt("lives-standard.max") * 2.0;
         double health = Dodgeball.instance.getConfig().getInt("lives-standard.starting") * 2.0;
 
-        player.setMaxHealth(member.getPriority() > 0 ? maxHealth + 2 : maxHealth);
-        player.setHealth(member.getPriority() > 0 ? health + 2 : health);
+        player.setMaxHealth(membership != null ? maxHealth + 2 : maxHealth);
+        player.setHealth(membership != null ? health + 2 : health);
         player.setFoodLevel(20);
 
         players.put(player.getName(), team);

@@ -71,16 +71,17 @@ public class PerkManager {
     public static Inventory getPerkMenu(Player player) {
         Inventory menu = Dodgeball.instance.getServer().createInventory(null, 9, "Perk Menu");
         Perks perk = Dodgeball.instance.getDatabaseConnection().getPerks(player);
-        Membership member = MassDatabase.getMembership(player);
+        Membership membership = MassDatabase.getMembership(player);
+        int priority = membership != null ? membership.getPriority() : 0;
 
-        menu.addItem(getPerkIcon(player, Perk.STARTING_BALLS, perk.getStartingBalls() + (member.getPriority() > 2 ? 1 : 0)));
+        menu.addItem(getPerkIcon(player, Perk.STARTING_BALLS, perk.getStartingBalls() + (priority > 2 ? 1 : 0)));
         menu.addItem(getPerkIcon(player, Perk.TRIPPLE_SHOTS, perk.getTripleShots()));
         menu.addItem(getPerkIcon(player, Perk.AIRSTRIKES, perk.getAirstrikes()));
         menu.addItem(getPerkIcon(player, Perk.BALL_BOOST, perk.getBallBoost()));
         menu.addItem(getPerkIcon(player, Perk.LIFE_BOOST, perk.getLifeBoost()));
         menu.addItem(getPerkIcon(player, Perk.EXTRA_LIVES, perk.getExtraLives()));
         menu.addItem(getPerkIcon(player, Perk.LIFE_GAINED_ON_HIT, perk.isLifeGainedOnHit(), 1));
-        menu.addItem(getPerkIcon(player, Perk.SPEED_BOOST, perk.isSpeedBoost() || member.getPriority() > 1, 1));
+        menu.addItem(getPerkIcon(player, Perk.SPEED_BOOST, perk.isSpeedBoost() || priority > 1, 1));
 
         return menu;
     }
