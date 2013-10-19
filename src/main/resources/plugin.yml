@@ -10,6 +10,10 @@ softdepend: [MassAPI]
 database: true
 
 commands:
+    arenas:
+        description: Displays a list of arenas group by game stage
+        usage: /arenas
+        aliases: arenalist
     dodge:
         description: Root command for help and plugin info
         usage: /dodge [help/reload/version]
@@ -18,6 +22,7 @@ commands:
         description: Teleports to the global lobby
         usage: /spawn
         aliases: [lobby, globby, globallobby]
+
     create:
         description: Creates a new arena
         usage: /create <arena>
@@ -62,10 +67,6 @@ commands:
     clearlines:
         description: Removes all the boundaries in the specified arena
         usage: /clearlines <arena>
-    arenas:
-        description: Displays a list of arenas group by game stage
-        usage: /arenas
-        aliases: arenalist
     arenainfo:
         description: Displays information about the provided arena
         usage: /arenainfo <arenea>

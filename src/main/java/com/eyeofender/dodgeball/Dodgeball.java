@@ -9,6 +9,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.eyeofender.dodgeball.command.CommandManager;
 import com.eyeofender.dodgeball.connect.DatabaseConnection;
 import com.eyeofender.dodgeball.event.GameListener;
 import com.eyeofender.dodgeball.event.GeneralListener;
@@ -57,8 +58,11 @@ public class Dodgeball extends JavaPlugin {
         gameListener = new GameListener();
         generalListener = new GeneralListener();
         getServer().getPluginManager().registerEvents(generalListener, this);
+
         logInfo("Registering command handlers...");
         cmdexe = new Commands();
+        CommandManager.registerCommands(this);
+
         logInfo("Loading saved arenas...");
         gameManager.loadArenas();
         gameManager.updateArenaSigns();

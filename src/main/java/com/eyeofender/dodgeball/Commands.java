@@ -12,48 +12,8 @@ import com.eyeofender.dodgeball.game.Team;
 
 public class Commands {
 
-    private final String[] commands = { "create <arena>", "delete <arena>", "save <arena/all>", "rename <arena> <name>", "join <arena>", "spectate <arena>", "leave", "team <team>", "setgloballobby",
-            "setlobby <arena>", "addspawn <arena> <team>", "clearspawns <arena> <team/all>", "setline <arena> [cancel]", "clearlines <arena>", "arenalist", "arenainfo <arena>", "playerlist <arena>",
-            "search <username>", "eject <player>/(all <arena>)", "fstart <arena> [delay]", "fstop <arena> [delay]", "addball <arena> [team]", "clearballs <arena>", "friendlyfire <arena> <on/off>",
-            "setballlimit <arena> <limit>", "setlimit <arena> <limit>", "setstartcount <arena> <count>" };
-
     public boolean run(CommandSender sender, Command cmd, String label, String[] args) {
         label = label.toLowerCase();
-        if (label.equals("dodge") || label.equals("dodgeball") || label.equals("db")) {
-            if (args.length == 0 || args[0].equalsIgnoreCase("version"))
-                return sendMsg(sender, "Running version " + ChatColor.LIGHT_PURPLE + Dodgeball.instance.getDescription().getVersion() + ChatColor.GRAY + " by " + ChatColor.BLUE + "LimeByte.");
-            if (args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("?")) {
-                StringBuffer sb = new StringBuffer(ChatColor.GRAY + "[]" + ChatColor.RED + "===" + ChatColor.GRAY + "[" + ChatColor.DARK_RED + "Arena Commands" + ChatColor.GRAY + "]" + ChatColor.RED
-                        + "===" + ChatColor.GRAY + "[]");
-                for (int i = 0; i < commands.length; i++)
-                    sb.append("\n/" + (i % 2 == 0 ? ChatColor.AQUA : ChatColor.DARK_AQUA) + commands[i]);
-                sender.sendMessage(sb.toString());
-                return true;
-            }
-            if (args[0].equalsIgnoreCase("reload")) {
-                if (!authorizeSender(sender, false, "dodgeball.reload")) return true;
-                Dodgeball.instance.reloadConfig();
-                return sendMsg(sender, ChatColor.GREEN + "Reloaded the config.");
-            }
-        }
-
-        if (label.equals("spawn") || label.equals("lobby") || label.equals("globby") || label.equals("globallobby")) {
-            if (!authorizeSender(sender, true, null)) return true;
-            Player player = (Player) sender;
-            if (Dodgeball.instance.getGameManager().getArena(player) != null || Dodgeball.instance.getGameManager().getArenaFromSpectator(player) != null)
-                return sendMsg(sender, ChatColor.RED + "You can't teleport while in an arena. You must /leave first.");
-            ((Player) sender).teleport(Dodgeball.instance.getGameManager().getGlobalLobby());
-            return true;
-        }
-
-        if (label.equals("arenas") || label.equals("arenalist")) {
-            if (!authorizeSender(sender, false, "dodgeball.arena.list")) return true;
-            sender.sendMessage(ChatColor.GRAY + "[]" + ChatColor.RED + "===" + ChatColor.GRAY + "[" + ChatColor.DARK_RED + "Arenas" + ChatColor.GRAY + "]" + ChatColor.RED + "===" + ChatColor.GRAY
-                    + "[]\n" + ChatColor.GREEN + "Waiting: " + ChatColor.GRAY + Arrays.toString(Dodgeball.instance.getGameManager().getArenasInStage(0)) + ChatColor.YELLOW + "\nStarting: "
-                    + ChatColor.GRAY + Arrays.toString(Dodgeball.instance.getGameManager().getArenasInStage(1)) + ChatColor.RED + "\nIn game: " + ChatColor.GRAY
-                    + Arrays.toString(Dodgeball.instance.getGameManager().getArenasInStage(2)));
-            return true;
-        }
 
         if (label.equals("leave")) {
             if (!authorizeSender(sender, true, null)) return true;
