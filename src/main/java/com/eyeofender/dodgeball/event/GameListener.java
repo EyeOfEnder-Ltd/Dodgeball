@@ -115,12 +115,10 @@ public class GameListener implements Listener {
             shooter.sendMessage(Dodgeball.prefix + "You hit " + defender.getName() + "!");
         }
 
-        DatabaseConnection database = Dodgeball.instance.getDatabaseConnection();
-
-        Stats stats = database.getStats(defender, false);
+        Stats stats = DatabaseConnection.getStats(defender, false);
         stats.setTotalHarm(stats.getTotalHarm() + 1);
 
-        stats = database.getStats(shooter, false);
+        stats = DatabaseConnection.getStats(shooter, false);
         stats.setTotalHits(stats.getTotalHits() + 1);
 
         int gain = Dodgeball.instance.getConfig().getInt((defender.hasPermission("dodgeball.lives.vip") ? "lives-vip" : "lives-standard") + ".gained-on-hit");
@@ -220,8 +218,7 @@ public class GameListener implements Listener {
     public void onProjectileLaunch(ProjectileLaunchEvent event) {
         if (event.getEntityType() != EntityType.SNOWBALL || !(event.getEntity().getShooter() instanceof Player)) return;
         Player shooter = (Player) event.getEntity().getShooter();
-        DatabaseConnection database = Dodgeball.instance.getDatabaseConnection();
-        Stats stats = database.getStats(shooter, false);
+        Stats stats = DatabaseConnection.getStats(shooter, false);
 
         switch (ActivePerks.get(shooter).getFiringMode()) {
             case STANDARD:
@@ -260,7 +257,7 @@ public class GameListener implements Listener {
             return;
         }
 
-        Stats stats = Dodgeball.instance.getDatabaseConnection().getStats(player, false);
+        Stats stats = DatabaseConnection.getStats(player, false);
         stats.setTotalMisses(stats.getTotalMisses() + 1);
 
         dropDodgeball(arena, event.getEntity().getLocation());

@@ -366,8 +366,7 @@ public class Arena implements Serializable {
         player.setWalkSpeed(0.2f);
         player.getInventory().setHelmet(null);
         Dodgeball.instance.getGameManager().loadGeneralInventory(player);
-        DatabaseConnection database = Dodgeball.instance.getDatabaseConnection();
-        database.saveStats(database.getStats(player, false));
+        DatabaseConnection.saveStats(DatabaseConnection.getStats(player, false));
         if (spectate) {
             addSpectator(player);
             player.sendMessage(Dodgeball.prefix + "You are now spectating in arena: " + name + ". Type " + ChatColor.AQUA + "/leave" + ChatColor.GRAY + " to return to the global lobby.");
@@ -401,7 +400,6 @@ public class Arena implements Serializable {
 
     public void clearPlayers() {
         hideScoreboard();
-        DatabaseConnection database = Dodgeball.instance.getDatabaseConnection();
         for (String name : players.keySet()) {
             Player player = Dodgeball.instance.getServer().getPlayerExact(name);
             if (player == null) continue;
@@ -411,7 +409,7 @@ public class Arena implements Serializable {
             player.getInventory().setHelmet(null);
             Dodgeball.instance.getGameManager().loadGeneralInventory(player);
             player.teleport(Dodgeball.instance.getGameManager().getGlobalLobby());
-            database.saveStats(database.getStats(player, false));
+            DatabaseConnection.saveStats(DatabaseConnection.getStats(player, false));
         }
         players.clear();
         updateSigns();
@@ -718,13 +716,12 @@ public class Arena implements Serializable {
                         }
                     }
 
-                    DatabaseConnection database = Dodgeball.instance.getDatabaseConnection();
                     for (String name : players.keySet()) {
                         Player player = Bukkit.getServer().getPlayerExact(name);
                         if (player == null) continue;
 
-                        Stats stats = database.getStats(player, false);
-                        database.saveStats(stats);
+                        Stats stats = DatabaseConnection.getStats(player, false);
+                        DatabaseConnection.saveStats(stats);
                     }
 
                     Dodgeball.instance.getServer().broadcastMessage(Dodgeball.prefix + ChatColor.GOLD + "The " + leadingTeam.toString() + " team emerges victorious from the arena: " + name + "!");

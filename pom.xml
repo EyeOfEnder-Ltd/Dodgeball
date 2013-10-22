@@ -5,7 +5,7 @@
 	<name>Dodgeball</name>
 	<groupId>com.eyeofender</groupId>
 	<artifactId>dodgeball</artifactId>
-	<version>3.2.0-SNAPSHOT</version>
+	<version>3.1.0</version>
 	<url>https://github.com/EyeOfEnder-Ltd/Dodgeball</url>
 	<inceptionYear>2013</inceptionYear>
 	<description>TheMass dodgeball minigame.</description>

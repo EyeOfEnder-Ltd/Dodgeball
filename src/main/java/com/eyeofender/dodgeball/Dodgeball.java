@@ -13,17 +13,13 @@ import com.eyeofender.dodgeball.command.CommandManager;
 import com.eyeofender.dodgeball.connect.DatabaseConnection;
 import com.eyeofender.dodgeball.event.GameListener;
 import com.eyeofender.dodgeball.event.GeneralListener;
+import com.eyeofender.dodgeball.event.StatsSignManager;
 import com.eyeofender.dodgeball.game.GameManager;
 import com.eyeofender.massapi.MassAPI;
 
 public class Dodgeball extends JavaPlugin {
 
     public static final String prefix = ChatColor.GRAY + "[" + ChatColor.DARK_PURPLE + "Dodgeball" + ChatColor.GRAY + "] ";
-    // public static final String prefix = ChatColor.GRAY + "[" +
-    // ChatColor.DARK_RED + ChatColor.BOLD + ChatColor.ITALIC +
-    // "D" + ChatColor.DARK_RED + ChatColor.ITALIC + "odge" + ChatColor.BLUE +
-    // ChatColor.BOLD + ChatColor.ITALIC +
-    // "b" + ChatColor.BLUE + ChatColor.ITALIC + "all" + ChatColor.GRAY + "] ";
 
     public static Dodgeball instance;
     public static boolean broadcastOnHit;
@@ -34,7 +30,7 @@ public class Dodgeball extends JavaPlugin {
     private GameManager gameManager;
     private GameListener gameListener;
     private GeneralListener generalListener;
-    private DatabaseConnection databaseConnection;
+    private StatsSignManager statsSignListener;
 
     // private DonationListener donationListener;
 
@@ -54,10 +50,13 @@ public class Dodgeball extends JavaPlugin {
         logInfo("Loading the config...");
         saveDefaultConfig();
         reloadConfig();
+        statsSignListener = new StatsSignManager(this);
+
         logInfo("Registering listeners...");
         gameListener = new GameListener();
         generalListener = new GeneralListener();
-        getServer().getPluginManager().registerEvents(generalListener, this);
+        pm.registerEvents(generalListener, this);
+        pm.registerEvents(statsSignListener, this);
 
         logInfo("Registering command handlers...");
         cmdexe = new Commands();
@@ -68,7 +67,7 @@ public class Dodgeball extends JavaPlugin {
         gameManager.updateArenaSigns();
         gameManager.loadArenaMenus();
 
-        databaseConnection = new DatabaseConnection(this);
+        DatabaseConnection.init(this);
 
         logInfo("Starting round timer...");
         getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
@@ -91,6 +90,9 @@ public class Dodgeball extends JavaPlugin {
             getConfig().set("global-lobby.pitch", (double) gl.getPitch());
             saveConfig();
             logInfo("Saving current arenas...");
+
+            statsSignListener.saveLocations();
+
             getServer().getScheduler().cancelTasks(this);
             gameManager.shutdown();
             gameManager = null;
@@ -129,10 +131,6 @@ public class Dodgeball extends JavaPlugin {
 
     public GameListener getGameListener() {
         return gameListener;
-    }
-
-    public DatabaseConnection getDatabaseConnection() {
-        return databaseConnection;
     }
 
     public void logInfo(String msg) {

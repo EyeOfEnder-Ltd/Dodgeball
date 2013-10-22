@@ -15,22 +15,25 @@ import com.google.common.collect.Maps;
 
 public class DatabaseConnection {
 
-    private Dodgeball plugin;
+    private static Dodgeball plugin;
     private static Map<String, Stats> statsCache = Maps.newHashMap();
 
-    public DatabaseConnection(Dodgeball plugin) {
-        this.plugin = plugin;
+    private DatabaseConnection() {
+    }
+
+    public static void init(Dodgeball plugin) {
+        DatabaseConnection.plugin = plugin;
 
         try {
             plugin.getDatabase().find(Perks.class).findRowCount();
             plugin.getDatabase().find(Stats.class).findRowCount();
         } catch (PersistenceException ex) {
-            Dodgeball.instance.logInfo("Installing database due to first time usage");
-            Dodgeball.instance.installDDL();
+            plugin.logInfo("Installing database due to first time usage");
+            plugin.installDDL();
         }
     }
 
-    public Perks getPerks(Player player) {
+    public static Perks getPerks(Player player) {
         Perks perks = plugin.getDatabase().find(Perks.class).where().ieq("name", player.getName()).findUnique();
 
         if (perks == null) {
@@ -50,11 +53,15 @@ public class DatabaseConnection {
         return perks;
     }
 
-    public void savePerks(Perks perks) {
+    public static void savePerks(Perks perks) {
         plugin.getDatabase().update(perks);
     }
 
-    public Stats getStats(Player player, boolean refresh) {
+    public static List<Stats> getStats() {
+        return plugin.getDatabase().find(Stats.class).findList();
+    }
+
+    public static Stats getStats(Player player, boolean refresh) {
         Stats stats;
 
         if (!refresh) {
@@ -84,12 +91,12 @@ public class DatabaseConnection {
         return stats;
     }
 
-    public void saveStats(Stats stats) {
+    public static void saveStats(Stats stats) {
         statsCache.put(stats.getName(), stats);
         plugin.getDatabase().update(stats);
     }
 
-    public void setupPlayer(Player player) {
+    public static void setupPlayer(Player player) {
         getPerks(player);
         getStats(player, true);
     }

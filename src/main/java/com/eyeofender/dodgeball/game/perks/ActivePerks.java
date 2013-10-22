@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import com.eyeofender.dodgeball.Dodgeball;
+import com.eyeofender.dodgeball.connect.DatabaseConnection;
 import com.eyeofender.dodgeball.connect.table.Perks;
 import com.eyeofender.dodgeball.game.Arena;
 
@@ -111,7 +111,7 @@ public class ActivePerks {
         Player player = Bukkit.getPlayerExact(name);
         if (player == null) return;
 
-        Perks perks = Dodgeball.instance.getDatabaseConnection().getPerks(player);
+        Perks perks = DatabaseConnection.getPerks(player);
 
         if (startingBalls) {
             ItemStack ball = FiringMode.STANDARD.getDodgeball(arena);

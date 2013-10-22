@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import com.eyeofender.dodgeball.Dodgeball;
+import com.eyeofender.dodgeball.connect.DatabaseConnection;
 import com.eyeofender.dodgeball.connect.table.Perks;
 import com.eyeofender.massapi.chat.Messenger;
 import com.eyeofender.massapi.database.MassDatabase;
@@ -70,7 +71,7 @@ public class PerkManager {
 
     public static Inventory getPerkMenu(Player player) {
         Inventory menu = Dodgeball.instance.getServer().createInventory(null, 9, "Perk Menu");
-        Perks perk = Dodgeball.instance.getDatabaseConnection().getPerks(player);
+        Perks perk = DatabaseConnection.getPerks(player);
         Membership membership = MassDatabase.getMembership(player);
         int priority = membership != null ? membership.getPriority() : 0;
 

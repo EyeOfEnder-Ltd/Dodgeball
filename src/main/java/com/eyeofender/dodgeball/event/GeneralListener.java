@@ -235,7 +235,7 @@ public class GeneralListener implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         final Player joined = event.getPlayer();
 
-        Dodgeball.instance.getDatabaseConnection().setupPlayer(joined);
+        DatabaseConnection.setupPlayer(joined);
 
         Dodgeball.instance.getServer().getScheduler().scheduleSyncDelayedTask(Dodgeball.instance, new Runnable() {
             public void run() {
@@ -257,10 +257,9 @@ public class GeneralListener implements Listener {
         arena = Dodgeball.instance.getGameManager().getArenaFromSpectator(event.getPlayer());
         if (arena != null) arena.removeSpectator(event.getPlayer(), false);
 
-        DatabaseConnection database = Dodgeball.instance.getDatabaseConnection();
-        Stats stats = database.getStats(event.getPlayer(), false);
+        Stats stats = DatabaseConnection.getStats(event.getPlayer(), false);
         stats.setLastSeen(new java.util.Date());
-        database.saveStats(stats);
+        DatabaseConnection.saveStats(stats);
     }
 
     @EventHandler
@@ -274,10 +273,9 @@ public class GeneralListener implements Listener {
         arena = Dodgeball.instance.getGameManager().getArenaFromSpectator(event.getPlayer());
         if (arena != null) arena.removeSpectator(event.getPlayer(), false);
 
-        DatabaseConnection database = Dodgeball.instance.getDatabaseConnection();
-        Stats stats = database.getStats(event.getPlayer(), false);
+        Stats stats = DatabaseConnection.getStats(event.getPlayer(), false);
         stats.setLastSeen(new java.util.Date());
-        database.saveStats(stats);
+        DatabaseConnection.saveStats(stats);
     }
 
     @EventHandler
