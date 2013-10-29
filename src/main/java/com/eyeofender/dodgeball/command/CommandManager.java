@@ -14,12 +14,15 @@ public class CommandManager {
 
     static {
         commands.put("arenas", new ArenasCommand());
+        commands.put("create", new CreateCommand());
+        commands.put("delete", new DeleteCommand());
         commands.put("dodge", new DodgeCommand());
+        commands.put("rename", new RenameCommand());
+        commands.put("save", new SaveCommand());
         commands.put("spawn", new SpawnCommand());
     }
 
     private CommandManager() {
-
     }
 
     public static void registerCommands(JavaPlugin plugin) {

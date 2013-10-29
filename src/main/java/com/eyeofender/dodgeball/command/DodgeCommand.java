@@ -51,7 +51,7 @@ public class DodgeCommand extends DodgeballExecutor {
         Validate.notNull(alias, "Alias cannot be null");
 
         if (args.length == 1) {
-            return StringUtil.copyPartialMatches(args[0], PRIMARY_ARGS, new ArrayList<String>(PRIMARY_ARGS.size()));
+            return StringUtil.copyPartialMatches(args[0], PRIMARY_ARGS, new ArrayList<String>());
         }
 
         return ImmutableList.of();

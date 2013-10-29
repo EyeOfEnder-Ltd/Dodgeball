@@ -42,24 +42,6 @@ public class Commands {
         if (args.length < 1) return sendMsg(sender, ChatColor.RED + "Too few arguments.");
         String name = args[0];
 
-        if (label.equals("save")) {
-            if (!authorizeSender(sender, false, "dodgeball.arena.save")) return true;
-            if (args[0].equalsIgnoreCase("all")) {
-                Dodgeball.instance.getGameManager().saveArenas();
-                return sendMsg(sender, ChatColor.GREEN + "Saved changes to all arenas.");
-            }
-            Arena arena = Dodgeball.instance.getGameManager().getArena(args[0]);
-            if (arena == null) return sendMsg(sender, ChatColor.RED + "There is no arena by that name!");
-            arena.save();
-            return sendMsg(sender, ChatColor.GREEN + "Saved changes to arena: " + arena.getName());
-        }
-
-        if (label.equals("create") || label.equals("add")) {
-            if (!authorizeSender(sender, false, "dodgeball.arena.create")) return true;
-            return sendMsg(sender, Dodgeball.instance.getGameManager().addArena(new Arena(name)) ? ChatColor.GREEN + "Created a new arena: " + name : ChatColor.RED
-                    + "There is already an arena by that name!");
-        }
-
         if (label.equals("search")) {
             if (!authorizeSender(sender, false, "dodgeball.search")) return true;
             Player lookup = Dodgeball.instance.getServer().getPlayer(name);
@@ -114,13 +96,6 @@ public class Commands {
 
         Arena arena = Dodgeball.instance.getGameManager().getArena(name);
         if (arena == null) return sendMsg(sender, ChatColor.RED + "There is no arena by that name!");
-
-        if (label.equals("delete") || label.equals("remove")) {
-            if (!authorizeSender(sender, false, "dodgeball.arena.delete")) return true;
-            if (arena.getPlayerCount() > 0) return sendMsg(sender, ChatColor.RED + "An arena can only be deleted when empty.");
-            Dodgeball.instance.getGameManager().deleteArena(arena);
-            return sendMsg(sender, ChatColor.GREEN + "Successfully removed arena: " + arena.getName());
-        }
 
         if (label.equals("join")) {
             if (!authorizeSender(sender, true, "dodgeball.join")) return true;
@@ -250,15 +225,6 @@ public class Commands {
         }
 
         if (args.length < 2) return sendMsg(sender, ChatColor.RED + "Too few arguments.");
-
-        if (label.equals("rename")) {
-            if (!authorizeSender(sender, false, "dodgeball.arena.rename")) return true;
-            if (arena.getPlayerCount() != 0) return sendMsg(sender, ChatColor.RED + "The arena must be empty.");
-            if (Dodgeball.instance.getGameManager().getArena(args[1]) != null) return sendMsg(sender, ChatColor.RED + "There is already an arena by that name!");
-            String oldName = arena.getName();
-            arena.setName(args[1]);
-            return sendMsg(sender, ChatColor.GREEN + "Renamed arena " + oldName + " to " + arena.getName());
-        }
 
         if (label.equals("addspawn")) {
             if (!authorizeSender(sender, true, "dodgeball.arena.setspawn")) return true;

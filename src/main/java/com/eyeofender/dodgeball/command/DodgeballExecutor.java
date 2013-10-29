@@ -1,5 +1,7 @@
 package com.eyeofender.dodgeball.command;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang.Validate;
@@ -11,6 +13,7 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
 import com.eyeofender.dodgeball.Dodgeball;
+import com.eyeofender.dodgeball.game.Arena;
 import com.google.common.collect.ImmutableList;
 
 public abstract class DodgeballExecutor implements CommandExecutor, TabCompleter {
@@ -50,6 +53,15 @@ public abstract class DodgeballExecutor implements CommandExecutor, TabCompleter
     protected boolean sendMsg(CommandSender sender, String msg) {
         sender.sendMessage(Dodgeball.prefix + msg);
         return true;
+    }
+
+    protected List<String> getCurrentArenas() {
+        List<String> list = new ArrayList<String>();
+        for (Arena arena : Dodgeball.instance.getGameManager().getArenas()) {
+            list.add(arena.getName());
+        }
+        Collections.sort(list, String.CASE_INSENSITIVE_ORDER);
+        return list;
     }
 
 }

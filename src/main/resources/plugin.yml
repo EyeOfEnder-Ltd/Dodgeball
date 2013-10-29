@@ -14,15 +14,6 @@ commands:
         description: Displays a list of arenas group by game stage
         usage: /arenas
         aliases: arenalist
-    dodge:
-        description: Root command for help and plugin info
-        usage: /dodge [help/reload/version]
-        aliases: [dodgeball, db]
-    spawn:
-        description: Teleports to the global lobby
-        usage: /spawn
-        aliases: [lobby, globby, globallobby]
-
     create:
         description: Creates a new arena
         usage: /create <arena>
@@ -31,12 +22,21 @@ commands:
         description: Deletes an arena
         usage: /delete <arena>
         aliases: remove
-    save:
-        description: Saves changes to one or all arenas
-        usage: /save <arena/all>
+    dodge:
+        description: Root command for help and plugin info
+        usage: /dodge [help/reload/version]
+        aliases: [dodgeball, db]
     rename:
         description: Renames an arena
         usage: /rename <arena> <name>
+    save:
+        description: Saves changes to one or all arenas
+        usage: /save <arena|all>
+    spawn:
+        description: Teleports to the global lobby
+        usage: /spawn
+        aliases: [lobby, globby, globallobby]
+
     join:
         description: Attempts to join the specified arena
         usage: /join <arena>
