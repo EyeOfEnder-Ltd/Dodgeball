@@ -15,40 +15,8 @@ public class Commands {
     public boolean run(CommandSender sender, Command cmd, String label, String[] args) {
         label = label.toLowerCase();
 
-        if (label.equals("leave")) {
-            if (!authorizeSender(sender, true, null)) return true;
-            Player player = (Player) sender;
-            Arena arena = Dodgeball.instance.getGameManager().getArena(player);
-            boolean isSpectator = false;
-            if (arena == null) {
-                arena = Dodgeball.instance.getGameManager().getArenaFromSpectator(player);
-                if (arena == null) return sendMsg(sender, ChatColor.RED + "You aren't in an arena!");
-                isSpectator = true;
-            }
-            if (isSpectator) {
-                arena.removeSpectator(player, true);
-                return sendMsg(sender, ChatColor.GREEN + "No longer spectating in arena: " + arena.getName());
-            }
-            arena.removePlayer(player, false, true);
-            return sendMsg(sender, ChatColor.GREEN + "Left arena: " + arena.getName());
-        }
-
-        if (label.equals("setgloballobby")) {
-            if (!authorizeSender(sender, true, "dodgeball.setgloballobby")) return true;
-            Dodgeball.instance.getGameManager().setGlobalLobby(((Player) sender).getLocation());
-            return sendMsg(sender, ChatColor.GREEN + "Updated the global lobby!");
-        }
-
         if (args.length < 1) return sendMsg(sender, ChatColor.RED + "Too few arguments.");
         String name = args[0];
-
-        if (label.equals("search")) {
-            if (!authorizeSender(sender, false, "dodgeball.search")) return true;
-            Player lookup = Dodgeball.instance.getServer().getPlayer(name);
-            if (lookup == null) return sendMsg(sender, ChatColor.RED + "Player " + name + " is not online.");
-            Arena arena = Dodgeball.instance.getGameManager().getArena(lookup);
-            return sendMsg(sender, "Player " + lookup.getName() + " is " + (arena == null ? "not in an arena." : "in arena: " + arena.getName() + "."));
-        }
 
         if (label.equals("eject")) {
             if (!authorizeSender(sender, false, "dodgeball.arena.eject")) return true;
@@ -96,19 +64,6 @@ public class Commands {
 
         Arena arena = Dodgeball.instance.getGameManager().getArena(name);
         if (arena == null) return sendMsg(sender, ChatColor.RED + "There is no arena by that name!");
-
-        if (label.equals("join")) {
-            if (!authorizeSender(sender, true, "dodgeball.join")) return true;
-            Player player = (Player) sender;
-            if (!arena.addPlayer(player)) return true;
-            player.teleport(arena.getLobby());
-            player.sendMessage(Dodgeball.prefix + "Now playing in arena " + arena.getName() + "!");
-            if (arena.getStage() == 0 && arena.getPlayerCount() >= arena.getStartCount()) {
-                arena.broadcast("Start count reached! The round will begin shortly.");
-                arena.setStage(1);
-            }
-            return true;
-        }
 
         if (label.equals("spectate")) {
             if (!authorizeSender(sender, true, "dodgeball.spectate")) return true;

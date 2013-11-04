@@ -17,8 +17,12 @@ public class CommandManager {
         commands.put("create", new CreateCommand());
         commands.put("delete", new DeleteCommand());
         commands.put("dodge", new DodgeCommand());
+        commands.put("join", new JoinCommand());
+        commands.put("leave", new LeaveCommand());
         commands.put("rename", new RenameCommand());
         commands.put("save", new SaveCommand());
+        commands.put("search", new SearchCommand());
+        commands.put("setgloballobby", new SetGlobalLobbyCommand());
         commands.put("spawn", new SpawnCommand());
     }
 

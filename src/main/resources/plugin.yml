@@ -26,32 +26,35 @@ commands:
         description: Root command for help and plugin info
         usage: /dodge [help/reload/version]
         aliases: [dodgeball, db]
+    join:
+        description: Attempts to join the specified arena
+        usage: /join <arena>
+    leave:
+        description: Leaves the current arena
+        usage: /leave
     rename:
         description: Renames an arena
         usage: /rename <arena> <name>
     save:
         description: Saves changes to one or all arenas
         usage: /save <arena|all>
+    search:
+        description: Looks up the arena in which the player with the specified username is currently playing
+        usage: /search <username>
+    setgloballobby:
+        description: Places the global lobby at the player's location
+        usage: /setgloballoby
     spawn:
         description: Teleports to the global lobby
         usage: /spawn
         aliases: [lobby, globby, globallobby]
 
-    join:
-        description: Attempts to join the specified arena
-        usage: /join <arena>
     spectate:
         description: Joins the specified arena as a spectator
         usage: /spectate <arena>
-    leave:
-        description: Leaves the current arena
-        usage: /leave
     team:
         description: Attempts to join the specified team
         usage: /team <team>
-    setgloballobby:
-        description: Places the global lobby at the player's location
-        usage: /setgloballoby
     setlobby:
         description: Places the lobby of the specified arena at the player's location
         usage: /setlobby <arena>
@@ -74,9 +77,6 @@ commands:
         description: Displays a list of the players in an arena
         usage: /players <arena>
         aliases: playerlist
-    search:
-        description: Looks up the arena in which the player with the specified username is currently playing
-        usage: /search <username>
     eject:
         description: Kicks the provided user from his or her current arena, or kicks all players from the specified arena
         usage: /eject <player>/(all <arena>)
