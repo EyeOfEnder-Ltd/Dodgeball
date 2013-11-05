@@ -21,12 +21,12 @@ arena-menus:
     Ice Rink:
         item: ice
         arenas:
-            - IceRink1
-            - IceRink2
-            - IceRink3
-            - IceRink4
-            - IceRink5
-            - IceRink6
+            - IceRink_1
+            - IceRink_2
+            - IceRink_3
+            - IceRink_4
+            - IceRink_5
+            - IceRink_6
     Garden:
         item: sapling
         arenas:
@@ -54,3 +54,12 @@ arena-menus:
             - Gym_4
             - Gym_5
             - Gym_6
+    Courtyard:
+        item: brick
+        arenas:
+            - Courtyard_1
+            - Courtyard_2
+            - Courtyard_3
+            - Courtyard_4
+            - Courtyard_5
+            - Courtyard_6            
