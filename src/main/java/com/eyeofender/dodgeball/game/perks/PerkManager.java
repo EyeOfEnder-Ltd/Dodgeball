@@ -35,7 +35,7 @@ public class PerkManager {
         List<String> lore = meta.getLore();
 
         if (lore.get(STATE_LINE).equals(LOCKED)) {
-            Messenger.tellPlayer(player, ChatColor.RED + "This perk is locked.  Visit $1 to purchase it.", Messenger.STORE_URL);
+            Dodgeball.instance.getMessenger().tellPlayer(player, ChatColor.RED + "This perk is locked.  Visit $1 to purchase it.", Messenger.STORE_URL);
             return;
         }
 

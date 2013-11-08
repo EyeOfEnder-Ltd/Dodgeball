@@ -1,6 +1,7 @@
 package com.eyeofender.dodgeball;
 
 import java.util.List;
+import java.util.logging.Level;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -16,6 +17,7 @@ import com.eyeofender.dodgeball.event.GeneralListener;
 import com.eyeofender.dodgeball.event.StatsSignManager;
 import com.eyeofender.dodgeball.game.GameManager;
 import com.eyeofender.massapi.MassAPI;
+import com.eyeofender.massapi.chat.Messenger;
 
 public class Dodgeball extends JavaPlugin {
 
@@ -26,13 +28,12 @@ public class Dodgeball extends JavaPlugin {
     public static boolean saveOnEdit;
 
     private MassAPI api;
+    private Messenger messenger;
     private Commands cmdexe;
     private GameManager gameManager;
     private GameListener gameListener;
     private GeneralListener generalListener;
     private StatsSignManager statsSignListener;
-
-    // private DonationListener donationListener;
 
     public void onEnable() {
         PluginManager pm = getServer().getPluginManager();
@@ -41,46 +42,44 @@ public class Dodgeball extends JavaPlugin {
         try {
             this.api = (MassAPI) pm.getPlugin("MassAPI");
         } catch (NoClassDefFoundError e) {
-            logInfo("Unsupported or no version of MassAPI found.");
+            getLogger().info("Unsupported or no version of MassAPI found.");
             pm.disablePlugin(this);
             return;
         }
 
+        this.messenger = new Messenger(this, prefix);
+
         gameManager = new GameManager();
-        logInfo("Loading the config...");
         saveDefaultConfig();
         reloadConfig();
         statsSignListener = new StatsSignManager(this);
 
-        logInfo("Registering listeners...");
         gameListener = new GameListener();
         generalListener = new GeneralListener();
         pm.registerEvents(generalListener, this);
         pm.registerEvents(statsSignListener, this);
 
-        logInfo("Registering command handlers...");
         cmdexe = new Commands();
         CommandManager.registerCommands(this);
 
-        logInfo("Loading saved arenas...");
         gameManager.loadArenas();
         gameManager.updateArenaSigns();
         gameManager.loadArenaMenus();
 
         DatabaseConnection.init(this);
 
-        logInfo("Starting round timer...");
         getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
             public void run() {
                 gameManager.decrementTimers();
             }
         }, 10L, 20L);
-        logInfo("Successfully enabled. Game on!");
+
+        messenger.log(Level.INFO, "Successfully enabled. Game on!");
     }
 
     public void onDisable() {
         if (api != null) {
-            logInfo("Saving the config...");
+            messenger.log(Level.INFO, "Saving the config...");
             Location gl = gameManager.getGlobalLobby();
             getConfig().set("global-lobby.world", gl.getWorld().getName());
             getConfig().set("global-lobby.x", gl.getX());
@@ -89,7 +88,7 @@ public class Dodgeball extends JavaPlugin {
             getConfig().set("global-lobby.yaw", (double) gl.getYaw());
             getConfig().set("global-lobby.pitch", (double) gl.getPitch());
             saveConfig();
-            logInfo("Saving current arenas...");
+            messenger.log(Level.INFO, "Saving current arenas...");
 
             statsSignListener.saveLocations();
 
@@ -98,7 +97,7 @@ public class Dodgeball extends JavaPlugin {
             gameManager = null;
         }
 
-        logInfo("Successfully disabled. Game over!");
+        getLogger().info("Successfully disabled. Game over!");
         instance = null;
     }
 
@@ -133,15 +132,8 @@ public class Dodgeball extends JavaPlugin {
         return gameListener;
     }
 
-    public void logInfo(String msg) {
-        getLogger().info(msg);
+    public Messenger getMessenger() {
+        return messenger;
     }
 
-    public void logWarning(String msg) {
-        getLogger().warning(msg);
-    }
-
-    public void logSevere(String msg) {
-        getLogger().severe(msg);
-    }
 }

@@ -3,6 +3,7 @@ package com.eyeofender.dodgeball.connect;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 import javax.persistence.PersistenceException;
 
@@ -28,7 +29,7 @@ public class DatabaseConnection {
             plugin.getDatabase().find(Perks.class).findRowCount();
             plugin.getDatabase().find(Stats.class).findRowCount();
         } catch (PersistenceException ex) {
-            plugin.logInfo("Installing database due to first time usage");
+            plugin.getMessenger().log(Level.INFO, "Installing database due to first time usage");
             plugin.installDDL();
         }
     }

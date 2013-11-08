@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -61,7 +62,7 @@ public class GameManager {
                 arenas.add(arena);
                 ois.close();
             } catch (Exception e) {
-                Dodgeball.instance.logSevere("Failed to load an arena from the following file: " + arenaFile.getName());
+                Dodgeball.instance.getMessenger().log(Level.SEVERE, "Failed to load an arena from the $1 file.", arenaFile.getName());
                 e.printStackTrace();
                 continue;
             }

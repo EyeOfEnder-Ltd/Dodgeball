@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
+import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -796,7 +797,7 @@ public class Arena implements Serializable {
             oos.writeObject(this);
             oos.close();
         } catch (IOException e) {
-            Dodgeball.instance.logSevere("Failed to save arena \"" + name + "\"");
+            Dodgeball.instance.getMessenger().log(Level.SEVERE, "Failed to save arena \"" + name + "\"");
             e.printStackTrace();
         }
     }
