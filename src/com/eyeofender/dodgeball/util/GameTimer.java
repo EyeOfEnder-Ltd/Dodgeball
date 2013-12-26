@@ -33,7 +33,7 @@ public class GameTimer {
 
     public void onTimeChange(long time) {
         if (time % 5 == 0) {
-            plugin.getGame().spawnDodgeball(plugin.getGame().getArena().getRandomTeam(), false);
+            plugin.getGame().spawnDodgeball(null, false);
         }
 
         if (time % 60 == 0) {
