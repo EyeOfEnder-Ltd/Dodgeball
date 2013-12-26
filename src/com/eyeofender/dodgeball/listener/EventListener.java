@@ -1,5 +1,6 @@
 package com.eyeofender.dodgeball.listener;
 
+import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -75,7 +76,7 @@ public class EventListener implements Listener {
 
     @EventHandler
     public void onPlayerPing(ServerListPingEvent event) {
-        event.setMotd(plugin.getGame().getState().getMotd());
+        event.setMotd(ChatColor.GREEN + "New Gamemode!");
     }
 
     @EventHandler
