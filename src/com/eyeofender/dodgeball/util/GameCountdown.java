@@ -1,6 +1,7 @@
 package com.eyeofender.dodgeball.util;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -31,8 +32,11 @@ public class GameCountdown {
     }
 
     public void onTimeChange(long time) {
-        if (time <= 10) {
-            Bukkit.broadcastMessage("Game starting in " + time + "!");
+
+        if (time > 10 && time % 10 == 0) {
+            Bukkit.broadcastMessage(ChatColor.AQUA + "Game starting in " + time + " seconds!");
+        } else if (time <= 10) {
+            Bukkit.broadcastMessage(ChatColor.AQUA + "Game starting in " + time + "!");
         }
     }
 
