@@ -59,11 +59,13 @@ public class EventListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         plugin.getGame().addPlayer(event.getPlayer());
+        event.setJoinMessage(null);
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         plugin.getGame().removePlayer(event.getPlayer());
+        event.setQuitMessage(null);
     }
 
     @EventHandler
