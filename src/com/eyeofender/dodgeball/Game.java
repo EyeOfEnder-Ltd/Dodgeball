@@ -1,6 +1,5 @@
 package com.eyeofender.dodgeball;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -205,10 +204,8 @@ public class Game {
     }
 
     public void assignTeam(Player player) {
-        DodgeTeam smallest = null;
+        DodgeTeam smallest = arena.getRandomTeam();
         int size = Integer.MAX_VALUE;
-
-        List<DodgeTeam> possible = Arrays.asList(arena.getTeams().toArray(new DodgeTeam[arena.getTeams().size()]));
 
         Map<DodgeTeam, Integer> teams = Maps.newHashMap();
         for (DodgeTeam team : players.values()) {
@@ -219,15 +216,15 @@ public class Game {
             }
         }
 
-        for (Entry<DodgeTeam, Integer> entry : teams.entrySet()) {
-            possible.remove(entry.getKey());
-            if (entry.getValue() < size) {
-                size = entry.getValue();
-                smallest = entry.getKey();
+        if (teams.size() == arena.getTeams().size()) {
+
+            for (Entry<DodgeTeam, Integer> entry : teams.entrySet()) {
+                if (entry.getValue() < size) {
+                    size = entry.getValue();
+                    smallest = entry.getKey();
+                }
             }
         }
-
-        if (possible.size() != 0) smallest = possible.get(0);
 
         setTeam(player, smallest);
     }
