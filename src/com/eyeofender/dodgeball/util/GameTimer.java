@@ -36,6 +36,10 @@ public class GameTimer {
             plugin.getGame().spawnDodgeball(plugin.getGame().getArena().getRandomTeam(), false);
         }
 
+        if (time % 60 == 0) {
+            Bukkit.broadcastMessage(ChatColor.AQUA + "" + (time / 60) + " minute(s) remaining!");
+        }
+
         if (time <= 10) {
             Bukkit.broadcastMessage(ChatColor.AQUA + "Game ending in " + time + "!");
         }

@@ -25,6 +25,7 @@ import com.eyeofender.dodgeball.util.GameCountdown;
 import com.eyeofender.dodgeball.util.GameTimer;
 import com.eyeofender.dodgeball.util.Menu;
 import com.eyeofender.enderpearl.Util;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class Game {
@@ -95,6 +96,8 @@ public class Game {
         player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
         players.remove(player.getName());
         Util.sendPM(player, "Connect", "hub");
+
+        if (getState() == State.IN_GAME && getRemainingTeams() < 2) stop();
     }
 
     public boolean contains(Player player) {
@@ -102,7 +105,7 @@ public class Game {
     }
 
     private void startCountdown() {
-        if (players.size() < arena.getTeams().size()) {
+        if (players.size() < 4 || getRemainingTeams() < 2) {
             Bukkit.broadcastMessage(ChatColor.AQUA + "The countdown will begin once " + (arena.getTeams().size() - players.size()) + " more players join!");
             return;
         }
@@ -134,6 +137,17 @@ public class Game {
 
         timer.stop();
 
+        List<DodgeTeam> teams = Lists.newArrayList();
+        for (DodgeTeam team : players.values()) {
+            if (!teams.contains(team)) teams.add(team);
+        }
+
+        if (teams.size() == 1) {
+            Bukkit.broadcastMessage(ChatColor.GOLD + "The " + teams.get(0).getChatColour() + teams.get(0).getDisplayName() + ChatColor.GOLD + " team won the game!");
+        } else {
+            Bukkit.broadcastMessage(ChatColor.GOLD + "Draw!");
+        }
+
         for (Entry<String, DodgeTeam> entry : players.entrySet()) {
             Player player = Bukkit.getPlayerExact(entry.getKey());
             if (player == null) continue;
@@ -157,6 +171,10 @@ public class Game {
 
     public Arena getArena() {
         return arena;
+    }
+
+    public int getBallCount() {
+        return ballCount;
     }
 
     public void setArena(Arena arena) {
@@ -196,6 +214,16 @@ public class Game {
             t.setPrefix(team.getChatColour() + "");
         }
         t.addPlayer(player);
+    }
+
+    public int getRemainingTeams() {
+        List<String> teams = Lists.newArrayList();
+        for (DodgeTeam team : players.values()) {
+            if (!teams.contains(team.toString())) {
+                teams.add(team.toString());
+            }
+        }
+        return teams.size();
     }
 
     public void dropDodgeball(Location location) {
