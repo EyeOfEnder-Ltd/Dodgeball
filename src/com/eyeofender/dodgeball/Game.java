@@ -110,8 +110,10 @@ public class Game {
             return;
         }
 
-        state = State.STARTING;
-        countdown.start();
+        if (getState() == State.WAITING) {
+            state = State.STARTING;
+            countdown.start();
+        }
     }
 
     public void start() {

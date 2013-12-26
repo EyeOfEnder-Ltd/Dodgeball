@@ -29,12 +29,9 @@ public class ActivePerks {
     private boolean lifeGainedOnHit;
     private boolean speedBoost;
 
-    private FiringMode firingMode;
-
     public ActivePerks(String name) {
         this.name = name;
         disableAll();
-        this.firingMode = FiringMode.STANDARD;
         activePerks.put(name, this);
     }
 
@@ -98,11 +95,7 @@ public class ActivePerks {
     }
 
     public FiringMode getFiringMode() {
-        return firingMode;
-    }
-
-    public void setFiringMode(FiringMode firingMode) {
-        this.firingMode = firingMode;
+        return FiringMode.getByItem(Bukkit.getPlayerExact(name).getItemInHand());
     }
 
     public void apply(Arena arena) {
