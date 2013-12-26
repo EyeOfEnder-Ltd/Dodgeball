@@ -1,0 +1,25 @@
+name: Dodgeball
+author: LimeByte
+version: 1.0.0
+description: Dodgeball minigame for the EOE arcade
+
+main: com.eyeofender.dodgeball.Dodgeball
+load: POSTWORLD
+softdepend: [EnderPearl]
+
+commands:
+    arena:
+        description: Displays a list of arenas group by game stage.
+        usage: /<command> <option> <args...>
+        aliases: map
+    team:
+        description: Attempts to join the specified team.
+        usage: /<command> <team>
+    fstart:
+        description: Forces the round in the provided arena to start.
+        usage: /<command>
+        aliases: forcestart
+    fstop:
+        description: Forces the round in the provided arena to stop.
+        usage: /<command>
+        aliases: forcestop
