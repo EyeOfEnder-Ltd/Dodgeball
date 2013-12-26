@@ -1,6 +1,6 @@
 package com.eyeofender.dodgeball;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -85,8 +85,7 @@ public class Game {
         player.setFoodLevel(20);
         updateLives(player);
 
-        setTeam(player, arena.getRandomTeam());
-
+        assignTeam(player);
         player.teleport(arena.getLobby());
 
         startCountdown();
@@ -97,7 +96,7 @@ public class Game {
         players.remove(player.getName());
         Util.sendPM(player, "Connect", "hub");
 
-        if (getState() == State.IN_GAME && getRemainingTeams() < 2) stop();
+        if (getState() == State.IN_GAME && getRemainingTeams().size() < 2) stop();
     }
 
     public boolean contains(Player player) {
@@ -105,7 +104,7 @@ public class Game {
     }
 
     private void startCountdown() {
-        if (players.size() < 4 || getRemainingTeams() < 2) {
+        if (players.size() < 4 || getRemainingTeams().size() < 2) {
             Bukkit.broadcastMessage(ChatColor.AQUA + "The countdown will begin once " + (arena.getTeams().size() - players.size()) + " more players join!");
             return;
         }
@@ -145,7 +144,7 @@ public class Game {
         }
 
         if (teams.size() == 1) {
-            Bukkit.broadcastMessage(ChatColor.GOLD + "The " + teams.get(0).getChatColour() + teams.get(0).getDisplayName() + ChatColor.GOLD + " team won the game!");
+            Bukkit.broadcastMessage(teams.get(0).getChatColour() + teams.get(0).getDisplayName() + ChatColor.GOLD + " team won the game!");
         } else {
             Bukkit.broadcastMessage(ChatColor.GOLD + "Draw!");
         }
@@ -154,6 +153,8 @@ public class Game {
             Player player = Bukkit.getPlayerExact(entry.getKey());
             if (player == null) continue;
 
+            if (teams.size() == 1 && teams.get(0).equals(entry.getValue())) player.sendMessage(ChatColor.GREEN + "Your team won the game!");
+
             player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
             Util.sendPM(player, "Connect", "hub");
         }
@@ -161,9 +162,7 @@ public class Game {
         players.clear();
 
         clearDodgeballs();
-
         state = State.RESTARTING;
-
         setArena(Arena.getRandom());
     }
 
@@ -205,8 +204,42 @@ public class Game {
         plugin.log().info("Selected arena '" + arena.getName() + "'.");
     }
 
+    public void assignTeam(Player player) {
+        DodgeTeam smallest = null;
+        int size = Integer.MAX_VALUE;
+
+        List<DodgeTeam> possible = Arrays.asList(arena.getTeams().toArray(new DodgeTeam[arena.getTeams().size()]));
+
+        Map<DodgeTeam, Integer> teams = Maps.newHashMap();
+        for (DodgeTeam team : players.values()) {
+            if (teams.containsKey(team)) {
+                teams.put(team, teams.get(team) + 1);
+            } else {
+                teams.put(team, 1);
+            }
+        }
+
+        for (Entry<DodgeTeam, Integer> entry : teams.entrySet()) {
+            possible.remove(entry.getKey());
+            if (entry.getValue() < size) {
+                size = entry.getValue();
+                smallest = entry.getKey();
+            }
+        }
+
+        if (possible.size() != 0) smallest = possible.get(0);
+
+        setTeam(player, smallest);
+    }
+
     public void setTeam(Player player, DodgeTeam team) {
         players.put(player.getName(), team);
+
+        Team oldTeam = scoreboard.getPlayerTeam(player);
+        if (oldTeam != null) {
+            oldTeam.removePlayer(player);
+        }
+
         Team t = scoreboard.getTeam(team.toString());
         if (t == null) {
             t = scoreboard.registerNewTeam(team.toString());
@@ -218,32 +251,22 @@ public class Game {
         t.addPlayer(player);
     }
 
-    public int getRemainingTeams() {
-        List<String> teams = Lists.newArrayList();
+    public List<DodgeTeam> getRemainingTeams() {
+        List<DodgeTeam> teams = Lists.newArrayList();
         for (DodgeTeam team : players.values()) {
-            if (!teams.contains(team.toString())) {
-                teams.add(team.toString());
-            }
+            if (!teams.contains(team)) teams.add(team);
         }
-        return teams.size();
+        return teams;
     }
 
     public void dropDodgeball(Location location) {
         location.getWorld().dropItem(location, FiringMode.STANDARD.getDodgeball());
     }
 
-    private List<DodgeTeam> getReadyTeams() {
-        List<DodgeTeam> validTeams = new ArrayList<DodgeTeam>();
-        for (DodgeTeam t : players.values()) {
-            if (!validTeams.contains(t)) validTeams.add(t);
-        }
-        return validTeams;
-    }
-
     public void spawnDodgeball(DodgeTeam team, boolean silently) {
         Random rand = new Random();
         if (team == null) { // Choose a team at random
-            List<DodgeTeam> validTeams = getReadyTeams();
+            List<DodgeTeam> validTeams = getRemainingTeams();
             if (validTeams.size() == 0) return;
             team = validTeams.get(rand.nextInt(validTeams.size()));
         }
