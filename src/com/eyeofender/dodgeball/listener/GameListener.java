@@ -82,7 +82,7 @@ public class GameListener implements Listener {
             Bukkit.broadcastMessage(defenderName + " has been eliminated!");
             Bukkit.broadcastMessage(ChatColor.AQUA + "" + (plugin.getGame().getPlayerCount() - 1) + " players remain!");
 
-            plugin.getGame().addSpectator(defender);
+            plugin.getGame().addSpectator(defender, false);
             return;
         } else {
             defender.getWorld().createExplosion(defender.getLocation(), 0, false);

@@ -51,8 +51,6 @@ public class EventListener implements Listener {
     public void onPlayerLogin(PlayerLoginEvent event) {
         if (plugin.getGame().getState() == State.DISABLED && !event.getPlayer().isOp()) {
             event.disallow(Result.KICK_OTHER, "This server is disabled.");
-        } else if (plugin.getGame().getState() == State.IN_GAME && !event.getPlayer().isOp()) {
-            event.disallow(Result.KICK_OTHER, "A game is already in progress!");
         } else if (plugin.getGame().getState() == State.RESTARTING) {
             event.disallow(Result.KICK_OTHER, "Server restarting!");
         }

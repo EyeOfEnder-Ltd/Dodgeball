@@ -101,7 +101,8 @@ public class Game {
 
             startCountdown();
         } else {
-            addSpectator(player);
+            addSpectator(player, true);
+            player.sendMessage(ChatColor.AQUA + "You are a spectator for the remainder of the game.");
         }
     }
 
@@ -114,7 +115,7 @@ public class Game {
         if (kick) Util.sendPM(player, "Connect", "hub");
     }
 
-    public void addSpectator(Player player) {
+    public void addSpectator(Player player, boolean teleport) {
         spectators.add(player.getName());
 
         player.setMaxHealth(2.0);
@@ -122,11 +123,14 @@ public class Game {
         player.getInventory().clear();
         player.getInventory().setArmorContents(new ItemStack[4]);
         player.setAllowFlight(true);
-        player.teleport(player.getLocation().add(0, 4, 0));
+
+        Location spawn = teleport ? arena.getRandomSpawnPoint(arena.getRandomTeam()) : player.getLocation();
+        player.teleport(spawn.add(0, 4, 0));
         player.setFlying(true);
 
         for (Player p : Bukkit.getOnlinePlayers()) {
             p.hidePlayer(player);
+            if (isSpectator(p)) player.hidePlayer(p);
         }
 
         if (getState() == State.IN_GAME && getRemainingTeams().size() < 2) stop();
