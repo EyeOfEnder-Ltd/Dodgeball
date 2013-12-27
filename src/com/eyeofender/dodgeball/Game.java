@@ -301,6 +301,11 @@ public class Game {
         int smallest = 500;
         int largest = 0;
 
+        if (state != State.WAITING && state != State.STARTING) {
+            player.sendMessage(ChatColor.RED + "You cannot switch teams mid-game!");
+            return;
+        }
+
         if (!arena.getTeams().contains(team)) {
             player.sendMessage(ChatColor.RED + "Invalid team!");
             return;
