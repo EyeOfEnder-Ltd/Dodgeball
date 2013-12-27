@@ -209,6 +209,7 @@ public class Game {
 
         Map<DodgeTeam, Integer> teams = Maps.newHashMap();
         for (DodgeTeam team : players.values()) {
+            if (team == null) continue;
             if (teams.containsKey(team)) {
                 teams.put(team, teams.get(team) + 1);
             } else {
