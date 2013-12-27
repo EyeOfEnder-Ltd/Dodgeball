@@ -96,6 +96,10 @@ public class DodgeTeam {
         players--;
     }
 
+    public void reset() {
+        players = 0;
+    }
+
     private static void register(DodgeTeam team) {
         BY_NAME.put(team.toString(), team);
     }

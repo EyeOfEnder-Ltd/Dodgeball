@@ -95,7 +95,7 @@ public class Game {
         player.setFoodLevel(20);
         updateLives(player);
 
-        if (state != State.IN_GAME) {
+        if (state == State.WAITING || state == State.STARTING) {
             assignTeam(player);
             player.teleport(arena.getLobby());
 
@@ -140,7 +140,6 @@ public class Game {
         if (!spectators.contains(player.getName())) return;
 
         player.setAllowFlight(false);
-
         spectators.remove(player.getName());
     }
 
@@ -226,11 +225,16 @@ public class Game {
                         if (player == null) continue;
 
                         player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
+                        setTeam(player, null);
 
                         if (!player.isOp() || player.getGameMode() != GameMode.CREATIVE) {
-                            player.setAllowFlight(false);
+                            removeSpectator(player);
                             Util.sendPM(player, "Connect", "hub");
                         }
+                    }
+
+                    for (DodgeTeam team : arena.getTeams()) {
+                        team.reset();
                     }
 
                     players.clear();
