@@ -62,9 +62,13 @@ public class GameListener implements Listener {
         if (!isInGame(shooter)) return;
 
         double health = defender.getHealth() - 2.0;
-        defender.sendMessage(ChatColor.RED + "You were hit by " + shooter.getName() + "!");
-        shooter.sendMessage(ChatColor.GREEN + "You hit " + defender.getName() + "!");
-        Bukkit.broadcastMessage(ChatColor.AQUA + defender.getName() + " was hit by " + shooter.getName() + "!");
+
+        String defenderName = plugin.getGame().getTeam(defender).getChatColour() + defender.getName();
+        String shooterName = plugin.getGame().getTeam(shooter).getChatColour() + defender.getName();
+
+        defender.sendMessage(ChatColor.RED + "You were hit by " + shooterName + ChatColor.RED + "!");
+        shooter.sendMessage(ChatColor.GREEN + "You hit " + defenderName + ChatColor.GREEN + "!");
+        Bukkit.broadcastMessage(defenderName + ChatColor.GRAY + " was hit by " + shooterName + ChatColor.GRAY + "!");
 
         if (ActivePerks.get(shooter).isActive(Perk.LIFE_GAINED_ON_HIT)) {
             double healthAfterGain = shooter.getHealth() + 2.0;

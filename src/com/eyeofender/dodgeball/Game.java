@@ -98,6 +98,10 @@ public class Game {
         if (getState() == State.IN_GAME && getRemainingTeams().size() < 2) stop();
     }
 
+    public DodgeTeam getTeam(Player player) {
+        return players.get(player.getName());
+    }
+
     public boolean contains(Player player) {
         return players.containsKey(player.getName());
     }
