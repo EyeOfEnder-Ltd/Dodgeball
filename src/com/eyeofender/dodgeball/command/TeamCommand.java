@@ -29,7 +29,7 @@ public class TeamCommand implements CommandExecutor {
                 builder.append(team.getChatColour() + team.toString());
                 builder.append(ChatColor.GRAY + ", ");
             }
-            builder.delete(0, builder.length() - 2);
+            builder.delete(builder.length() - 2, builder.length());
             builder.append(".");
 
             sender.sendMessage(ChatColor.RED + "Please specify a team.");
