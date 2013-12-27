@@ -9,9 +9,9 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 import java.util.logging.Level;
 
 import org.bukkit.Location;
@@ -32,7 +32,7 @@ public class Arena implements Serializable {
     private String name;
     private SerializableLocation lobby;
     private ArrayList<Region> midlines;
-    private HashMap<DodgeTeam, ArrayList<SerializableLocation>> spawnPoints;
+    private HashMap<String, ArrayList<SerializableLocation>> spawnPoints;
 
     private transient HashMap<String, Location> pendingLocations;
 
@@ -65,6 +65,7 @@ public class Arena implements Serializable {
     }
 
     public Location getLobby() {
+        if (lobby == null) return null;
         return lobby.asBukkitLocation();
     }
 
@@ -88,16 +89,20 @@ public class Arena implements Serializable {
         return false;
     }
 
-    public Set<DodgeTeam> getTeams() {
-        return spawnPoints.keySet();
+    public List<DodgeTeam> getTeams() {
+        List<DodgeTeam> teams = Lists.newArrayList();
+        for (String name : spawnPoints.keySet()) {
+            teams.add(DodgeTeam.fromString(name));
+        }
+        return teams;
     }
 
     public DodgeTeam getRandomTeam() {
-        return getTeams().toArray(new DodgeTeam[getTeams().size()])[rand.nextInt(getTeams().size())];
+        return getTeams().get(rand.nextInt(getTeams().size()));
     }
 
     public Location[] getSpawnPoints(DodgeTeam team) {
-        ArrayList<SerializableLocation> spawns = spawnPoints.get(team);
+        ArrayList<SerializableLocation> spawns = spawnPoints.get(team.toString());
         if (spawns == null) return null;
         Location[] spawnLocs = new Location[spawns.size()];
         for (int i = 0; i < spawns.size(); i++)
@@ -106,15 +111,15 @@ public class Arena implements Serializable {
     }
 
     public Location getRandomSpawnPoint(DodgeTeam team) {
-        ArrayList<SerializableLocation> spawns = spawnPoints.get(team);
+        ArrayList<SerializableLocation> spawns = spawnPoints.get(team.toString());
         if (spawns == null) return null;
         return spawns.get(rand.nextInt(spawns.size())).asBukkitLocation();
     }
 
     public void addSpawnPoint(DodgeTeam team, Location loc) {
         if (loc == null || team == null) return;
-        if (!spawnPoints.containsKey(team)) spawnPoints.put(team, new ArrayList<SerializableLocation>());
-        spawnPoints.get(team).add(new SerializableLocation(loc, true));
+        if (!spawnPoints.containsKey(team.toString())) spawnPoints.put(team.toString(), new ArrayList<SerializableLocation>());
+        spawnPoints.get(team.toString()).add(new SerializableLocation(loc, true));
         save();
     }
 
@@ -124,7 +129,7 @@ public class Arena implements Serializable {
     }
 
     public boolean clearSpawnPoints(DodgeTeam team) {
-        if (spawnPoints.remove(team) != null) {
+        if (spawnPoints.remove(team.toString()) != null) {
             save();
             return true;
         }

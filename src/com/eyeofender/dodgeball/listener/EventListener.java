@@ -5,6 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -14,6 +15,7 @@ import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
@@ -64,13 +66,13 @@ public class EventListener implements Listener {
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
-        plugin.getGame().removePlayer(event.getPlayer());
+        plugin.getGame().removePlayer(event.getPlayer(), false);
         event.setQuitMessage(null);
     }
 
     @EventHandler
     public void onPlayerKick(PlayerKickEvent event) {
-        plugin.getGame().removePlayer(event.getPlayer());
+        plugin.getGame().removePlayer(event.getPlayer(), false);
     }
 
     @EventHandler
@@ -88,15 +90,11 @@ public class EventListener implements Listener {
         if (event.getItem().getItemStack().getType() != Material.SNOW_BALL) event.setCancelled(true);
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerMove(PlayerMoveEvent event) {
         Player player = event.getPlayer();
         if (!canMove(player, event.getFrom(), event.getTo())) {
-            Location newLoc = event.getFrom();
-            newLoc.setX(newLoc.getBlockX() + 0.5);
-            newLoc.setY(newLoc.getY());
-            newLoc.setZ(newLoc.getBlockZ() + 0.5);
-            event.setTo(newLoc);
+            event.setTo(event.getFrom());
         }
     }
 
@@ -120,10 +118,24 @@ public class EventListener implements Listener {
         event.setCancelled(true);
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        Menu.handleClick(event);
+        event.setCancelled(true);
+    }
 
+    @EventHandler
+    public void onInventoryClickHandle(InventoryClickEvent event) {
+        Menu.handleClick(event);
+    }
+
+    @EventHandler
+    public void onGamemodeChange(PlayerGameModeChangeEvent event) {
+        if (event.getPlayer().getGameMode() == event.getNewGameMode()) return;
+        if (event.getNewGameMode() == GameMode.CREATIVE) {
+            plugin.getGame().removePlayer(event.getPlayer(), false);
+        } else {
+            plugin.getGame().addPlayer(event.getPlayer());
+        }
     }
 
     @EventHandler(ignoreCancelled = true)

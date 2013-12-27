@@ -79,16 +79,45 @@ public class ArenaCommand implements CommandExecutor {
                 return true;
             }
         } else if (args[0].equalsIgnoreCase("clear")) {
+            if (args.length < 3) return false;
 
+            Arena arena = Arena.get(args[1]);
+
+            if (args[2].equalsIgnoreCase("spawn")) {
+                arena.clearSpawnPoints(DodgeTeam.fromString(args[3]));
+                sender.sendMessage(ChatColor.GREEN + "Spawns cleared!");
+                return true;
+            }
         } else if (args[0].equalsIgnoreCase("save")) {
             if (args.length < 2) return false;
             Arena arena = Arena.get(args[1]);
             if (arena != null) {
                 arena.save();
             }
+        } else if (args[0].equalsIgnoreCase("check")) {
+            if (args.length < 2) {
+                sender.sendMessage(ChatColor.RED + "Please specify an arena.");
+                return true;
+            }
+
+            Arena arena = Arena.get(args[1]);
+
+            if (arena == null) {
+                sender.sendMessage(ChatColor.RED + "An arena by that name does not exist.");
+                return true;
+            }
+
+            sender.sendMessage(arena.getName());
+            sender.sendMessage(arena.isSetup() ? ChatColor.GREEN + "Ready" : ChatColor.RED + "Not Ready");
+            sender.sendMessage(arena.getLobby() != null ? "Lobby Set" : "Lobby Unset");
+            sender.sendMessage(arena.getTeams().isEmpty() ? "No teams" : arena.getTeams().size() + " Teams");
+
+            for (DodgeTeam team : arena.getTeams()) {
+                if (arena.getSpawnPoints(team) == null) continue;
+                sender.sendMessage(team.getChatColour() + team.getDisplayName() + ": " + arena.getSpawnPoints(team).length + " spawns");
+            }
         }
 
         return false;
     }
-
 }

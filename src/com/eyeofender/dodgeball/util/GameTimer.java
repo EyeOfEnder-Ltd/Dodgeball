@@ -24,7 +24,7 @@ public class GameTimer {
     }
 
     public long getTimeRemaining() {
-        return timeRemaining / 10;
+        return timeRemaining;
     }
 
     public boolean isRunning() {
@@ -50,11 +50,11 @@ public class GameTimer {
     }
 
     public void setTime(long time) {
-        this.time = time * 10;
+        this.time = time;
     }
 
     public void setTimeRemaining(long timeRemaining) {
-        this.timeRemaining = timeRemaining * 10;
+        this.timeRemaining = timeRemaining;
     }
 
     public void start() {

@@ -8,6 +8,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.eyeofender.dodgeball.command.ArenaCommand;
 import com.eyeofender.dodgeball.command.FStartCommand;
 import com.eyeofender.dodgeball.command.FStopCommand;
+import com.eyeofender.dodgeball.command.TeamCommand;
 import com.eyeofender.dodgeball.listener.EventListener;
 import com.eyeofender.dodgeball.listener.GameListener;
 import com.eyeofender.dodgeball.listener.LobbyListener;
@@ -43,6 +44,7 @@ public class Dodgeball extends JavaPlugin {
         getCommand("arena").setExecutor(new ArenaCommand());
         getCommand("fstart").setExecutor(new FStartCommand(this));
         getCommand("fstop").setExecutor(new FStopCommand(this));
+        getCommand("team").setExecutor(new TeamCommand(this));
 
         log().info("Version " + getDescription().getVersion() + " enabled successfully!");
     }

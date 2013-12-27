@@ -76,36 +76,29 @@ public class Menu {
         SlotType type = event.getSlotType();
         if (type != null) {
             if (type == SlotType.ARMOR || type == SlotType.OUTSIDE) {
-                event.setCancelled(true);
                 return;
             }
         }
 
         if (item.isSimilar(flame)) {
             player.closeInventory();
-            event.setCancelled(true);
             event.setResult(Result.DENY);
         } else if (item.isSimilar(star)) {
             player.closeInventory();
             player.openInventory(PerkManager.getPerkMenu(player));
-            event.setCancelled(true);
             event.setResult(Result.DENY);
         } else if (item.isSimilar(eye)) {
             player.closeInventory();
-            event.setCancelled(true);
         } else if (item.isSimilar(book)) {
             player.closeInventory();
-            event.setCancelled(true);
         }
 
         Inventory inv = event.getInventory();
         if (inv != null && type == SlotType.CONTAINER) {
             if (inv.getTitle().equals(PerkManager.TITLE)) {
-                event.setResult(Result.DENY);
                 PerkManager.toggleActive(item, player);
             }
         }
-
     }
 
     public static void handleInteract(PlayerInteractEvent event) {

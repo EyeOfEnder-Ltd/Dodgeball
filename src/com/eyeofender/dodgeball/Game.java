@@ -7,13 +7,19 @@ import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Color;
 import org.bukkit.Effect;
+import org.bukkit.FireworkEffect;
+import org.bukkit.FireworkEffect.Type;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.Firework;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.FireworkMeta;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
@@ -31,6 +37,7 @@ import com.google.common.collect.Maps;
 public class Game {
 
     private Dodgeball plugin;
+    private static Random rand = new Random();
     private State state;
     private Arena arena;
     private Map<String, DodgeTeam> players;
@@ -64,6 +71,7 @@ public class Game {
     }
 
     public void addPlayer(Player player) {
+        if (players.containsKey(player.getName())) return;
         if (arena == null) setArena(Arena.getRandom());
 
         if (state == State.DISABLED) {
@@ -97,11 +105,13 @@ public class Game {
         }
     }
 
-    public void removePlayer(Player player) {
+    public void removePlayer(Player player, boolean kick) {
+        if (!players.containsKey(player.getName())) return;
         player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
+        setTeam(player, null);
         players.remove(player.getName());
         removeSpectator(player);
-        Util.sendPM(player, "Connect", "hub");
+        if (kick) Util.sendPM(player, "Connect", "hub");
     }
 
     public void addSpectator(Player player) {
@@ -174,7 +184,7 @@ public class Game {
             player.teleport(arena.getRandomSpawnPoint(entry.getValue()));
             player.getInventory().clear();
             ActivePerks.get(player).apply(arena);
-            entry.getValue().equip(player);
+            entry.getValue().addPlayer(player);
         }
 
         spawnDodgeball(null, false);
@@ -195,21 +205,41 @@ public class Game {
             Bukkit.broadcastMessage(ChatColor.GOLD + "Draw!");
         }
 
-        for (Entry<String, DodgeTeam> entry : players.entrySet()) {
-            Player player = Bukkit.getPlayerExact(entry.getKey());
-            if (player == null) continue;
+        final Arena next = Arena.getRandom();
+        Bukkit.broadcastMessage(ChatColor.GOLD + "Next arena: " + next.getName() + "!");
 
-            if (teams.size() == 1 && teams.get(0).equals(entry.getValue())) player.sendMessage(ChatColor.GREEN + "Your team won the game!");
+        new BukkitRunnable() {
+            private int time = 10;
 
-            player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
-            Util.sendPM(player, "Connect", "hub");
-        }
+            @Override
+            public void run() {
+                time--;
 
-        players.clear();
+                launchFirework(arena.getRandomSpawnPoint(arena.getRandomTeam()));
 
-        clearDodgeballs();
-        state = State.RESTARTING;
-        setArena(Arena.getRandom());
+                if (time <= 0) {
+                    for (Entry<String, DodgeTeam> entry : players.entrySet()) {
+                        Player player = Bukkit.getPlayerExact(entry.getKey());
+                        if (player == null) continue;
+
+                        player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
+
+                        if (!player.isOp() || player.getGameMode() != GameMode.CREATIVE) {
+                            player.setAllowFlight(false);
+                            Util.sendPM(player, "Connect", "hub");
+                        }
+                    }
+
+                    players.clear();
+                    spectators.clear();
+
+                    clearDodgeballs();
+                    state = State.RESTARTING;
+                    setArena(next);
+                    cancel();
+                }
+            }
+        }.runTaskTimer(plugin, 20L, 20L);
     }
 
     public State getState() {
@@ -251,39 +281,62 @@ public class Game {
     }
 
     public void assignTeam(Player player) {
-        DodgeTeam smallest = arena.getRandomTeam();
-        int size = Integer.MAX_VALUE;
+        List<DodgeTeam> smallest = Lists.newArrayList();
+        int size = 500;
 
-        Map<DodgeTeam, Integer> teams = Maps.newHashMap();
-        for (DodgeTeam team : players.values()) {
-            if (team == null) continue;
-            if (teams.containsKey(team)) {
-                teams.put(team, teams.get(team) + 1);
-            } else {
-                teams.put(team, 1);
-            }
+        for (DodgeTeam team : arena.getTeams()) {
+            if (team.getPlayers() > size) continue;
+            if (team.getPlayers() < size) smallest.clear();
+            size = team.getPlayers();
+            smallest.add(team);
         }
 
-        if (teams.size() == arena.getTeams().size()) {
+        setTeam(player, smallest.get(rand.nextInt(smallest.size())));
+    }
 
-            for (Entry<DodgeTeam, Integer> entry : teams.entrySet()) {
-                if (entry.getValue() < size) {
-                    size = entry.getValue();
-                    smallest = entry.getKey();
-                }
-            }
+    public void switchTeam(Player player, DodgeTeam team) {
+        int smallest = 500;
+        int largest = 0;
+
+        if (!arena.getTeams().contains(team)) {
+            player.sendMessage(ChatColor.RED + "Invalid team!");
+            return;
         }
 
-        setTeam(player, smallest);
+        for (DodgeTeam t : arena.getTeams()) {
+            int size = t.getPlayers();
+
+            if (t.toString().equals(team.toString())) size++;
+            if (t.toString().equals(getTeam(player).toString())) size--;
+
+            if (size < smallest) smallest = size;
+            if (size > largest) largest = size;
+        }
+
+        if ((largest - smallest) > 2) {
+            player.sendMessage(ChatColor.RED + "You cannot join this team or they will become unbalanced!");
+            return;
+        }
+
+        setTeam(player, team);
     }
 
     public void setTeam(Player player, DodgeTeam team) {
+        DodgeTeam old = players.get(player.getName());
+        if (old != null) {
+            old.removePlayer(player);
+        }
+
         players.put(player.getName(), team);
 
         Team oldTeam = scoreboard.getPlayerTeam(player);
         if (oldTeam != null) {
             oldTeam.removePlayer(player);
         }
+
+        if (team == null) return;
+
+        team.addPlayer(player);
 
         Team t = scoreboard.getTeam(team.toString());
         if (t == null) {
@@ -342,6 +395,38 @@ public class Game {
 
     private void updateLives(Player player) {
         lives.getScore(player).setScore((int) (player.getHealth() / 2));
+    }
+
+    private void launchFirework(Location location) {
+        Firework fw = (Firework) location.getWorld().spawn(location, Firework.class);
+        FireworkMeta fm = fw.getFireworkMeta();
+        Type type = null;
+        switch (rand.nextInt(5)) {
+            default:
+            case 0:
+                type = Type.BALL;
+                break;
+            case 1:
+                type = Type.BALL_LARGE;
+                break;
+            case 2:
+                type = Type.BURST;
+                break;
+            case 3:
+                type = Type.CREEPER;
+                break;
+            case 4:
+                type = Type.STAR;
+                break;
+        }
+        Color c1 = Color.fromRGB(rand.nextInt(256), rand.nextInt(256), rand.nextInt(256));
+        Color c2 = Color.fromRGB(rand.nextInt(256), rand.nextInt(256), rand.nextInt(256));
+        FireworkEffect effect = FireworkEffect.builder().flicker(rand.nextBoolean()).withColor(c1).withFade(c2).with(type).trail(rand.nextBoolean()).build();
+        fm.addEffect(effect);
+        int Power = rand.nextInt(2) + 1;
+        fm.setPower(Power);
+        fw.setFireworkMeta(fm);
+
     }
 
     public enum State {
