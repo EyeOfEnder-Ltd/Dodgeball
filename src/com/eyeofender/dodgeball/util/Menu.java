@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event.Result;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType.SlotType;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -83,10 +84,12 @@ public class Menu {
         if (item.isSimilar(flame)) {
             player.closeInventory();
             event.setCancelled(true);
+            event.setResult(Result.DENY);
         } else if (item.isSimilar(star)) {
             player.closeInventory();
             player.openInventory(PerkManager.getPerkMenu(player));
             event.setCancelled(true);
+            event.setResult(Result.DENY);
         } else if (item.isSimilar(eye)) {
             player.closeInventory();
             event.setCancelled(true);
@@ -98,7 +101,7 @@ public class Menu {
         Inventory inv = event.getInventory();
         if (inv != null && type == SlotType.CONTAINER) {
             if (inv.getTitle().equals(PerkManager.TITLE)) {
-                event.setCancelled(true);
+                event.setResult(Result.DENY);
                 PerkManager.toggleActive(item, player);
             }
         }

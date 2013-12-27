@@ -7,6 +7,7 @@ import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Effect;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -33,6 +34,7 @@ public class Game {
     private State state;
     private Arena arena;
     private Map<String, DodgeTeam> players;
+    private List<String> spectators;
 
     private Scoreboard scoreboard;
     private Objective lives;
@@ -46,13 +48,14 @@ public class Game {
         this.plugin = plugin;
         this.state = State.DISABLED;
         this.players = Maps.newHashMap();
+        this.spectators = Lists.newArrayList();
 
         this.scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
         this.lives = scoreboard.registerNewObjective("lives", "dummy");
         lives.setDisplaySlot(DisplaySlot.BELOW_NAME);
         lives.setDisplayName(ChatColor.RED + "\u2764");
 
-        this.countdown = new GameCountdown(plugin, 60);
+        this.countdown = new GameCountdown(plugin, 120);
         this.timer = new GameTimer(plugin, 60 * 5);
 
         this.ballCount = 0;
@@ -84,18 +87,59 @@ public class Game {
         player.setFoodLevel(20);
         updateLives(player);
 
-        assignTeam(player);
-        player.teleport(arena.getLobby());
+        if (state != State.IN_GAME) {
+            assignTeam(player);
+            player.teleport(arena.getLobby());
 
-        startCountdown();
+            startCountdown();
+        } else {
+            addSpectator(player);
+        }
     }
 
     public void removePlayer(Player player) {
         player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
         players.remove(player.getName());
+        removeSpectator(player);
         Util.sendPM(player, "Connect", "hub");
+    }
+
+    public void addSpectator(Player player) {
+        spectators.add(player.getName());
+
+        player.setMaxHealth(2.0);
+        player.setHealth(2.0);
+        player.getInventory().clear();
+        player.getInventory().setArmorContents(new ItemStack[4]);
+        player.setAllowFlight(true);
+        player.teleport(player.getLocation().add(0, 4, 0));
+        player.setFlying(true);
+
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            p.hidePlayer(player);
+        }
 
         if (getState() == State.IN_GAME && getRemainingTeams().size() < 2) stop();
+    }
+
+    public void removeSpectator(Player player) {
+        if (!spectators.contains(player.getName())) return;
+
+        player.setAllowFlight(false);
+
+        spectators.remove(player.getName());
+    }
+
+    public boolean isPlayer(Player player) {
+        return contains(player) && !spectators.contains(player.getName());
+    }
+
+    public boolean isSpectator(Player player) {
+        return contains(player) && spectators.contains(player.getName());
+    }
+
+    public int getPlayerCount() {
+        return players.size() - spectators.size();
     }
 
     public DodgeTeam getTeam(Player player) {
@@ -107,19 +151,21 @@ public class Game {
     }
 
     private void startCountdown() {
+        if (getState() != State.WAITING) return;
+
         if (players.size() < 4 || getRemainingTeams().size() < 2) {
             Bukkit.broadcastMessage(ChatColor.AQUA + "The countdown will begin once " + (arena.getTeams().size() - players.size()) + " more players join!");
             return;
         }
 
-        if (getState() == State.WAITING) {
-            state = State.STARTING;
-            countdown.start();
-        }
+        state = State.STARTING;
+        countdown.start();
     }
 
     public void start() {
         if (state != State.WAITING && state != State.STARTING) return;
+
+        if (countdown.isRunning()) countdown.stop();
 
         for (Entry<String, DodgeTeam> entry : players.entrySet()) {
             Player player = Bukkit.getPlayerExact(entry.getKey());
@@ -141,10 +187,7 @@ public class Game {
 
         timer.stop();
 
-        List<DodgeTeam> teams = Lists.newArrayList();
-        for (DodgeTeam team : players.values()) {
-            if (!teams.contains(team)) teams.add(team);
-        }
+        List<DodgeTeam> teams = getRemainingTeams();
 
         if (teams.size() == 1) {
             Bukkit.broadcastMessage(teams.get(0).getChatColour() + teams.get(0).getDisplayName() + ChatColor.GOLD + " team won the game!");
@@ -251,12 +294,14 @@ public class Game {
             t.setPrefix(team.getChatColour() + "");
         }
         t.addPlayer(player);
+        player.sendMessage(ChatColor.AQUA + "You are on team " + team.getChatColour() + team.getDisplayName());
     }
 
     public List<DodgeTeam> getRemainingTeams() {
         List<DodgeTeam> teams = Lists.newArrayList();
-        for (DodgeTeam team : players.values()) {
-            if (!teams.contains(team)) teams.add(team);
+        for (Entry<String, DodgeTeam> entry : players.entrySet()) {
+            if (spectators.contains(entry.getKey())) continue;
+            if (!teams.contains(entry.getValue())) teams.add(entry.getValue());
         }
         return teams;
     }
@@ -275,6 +320,9 @@ public class Game {
         Location[] spawns = arena.getSpawnPoints(team);
         Location dropLoc = spawns[rand.nextInt(spawns.length)];
         dropDodgeball(dropLoc);
+        dropLoc.getWorld().playEffect(dropLoc, Effect.ENDER_SIGNAL, 4);
+        dropLoc.getWorld().playEffect(dropLoc.add(0, 0.5, 0), Effect.ENDER_SIGNAL, 4);
+        dropLoc.getWorld().playEffect(dropLoc.add(0, 0.5, 0), Effect.ENDER_SIGNAL, 4);
         if (!silently) Bukkit.broadcastMessage(ChatColor.GRAY + "A new dodgeball has entered gameplay!");
         ballCount++;
     }

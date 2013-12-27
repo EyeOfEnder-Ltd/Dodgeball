@@ -32,10 +32,25 @@ public class GameCountdown {
     }
 
     public void onTimeChange(long time) {
+        if (time > 15 && time % 15 == 0) {
+            long minutes = time / 60;
+            long seconds = time - (minutes * 60);
+            StringBuilder builder = new StringBuilder();
 
-        if (time > 10 && time % 10 == 0) {
-            Bukkit.broadcastMessage(ChatColor.AQUA + "Game starting in " + time + " seconds!");
-        } else if (time <= 10) {
+            if (minutes > 0) {
+                builder.append(minutes + " minute");
+                if (minutes != 1) builder.append("s");
+            }
+
+            if (minutes > 0 && seconds > 0) builder.append(", ");
+
+            if (seconds > 0) {
+                builder.append(seconds + " second");
+                if (seconds != 1) builder.append("s");
+            }
+
+            Bukkit.broadcastMessage(ChatColor.AQUA + "Game starting in " + builder.toString() + "!");
+        } else if (time <= 15) {
             Bukkit.broadcastMessage(ChatColor.AQUA + "Game starting in " + time + "!");
         }
     }

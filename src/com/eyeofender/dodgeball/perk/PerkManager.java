@@ -39,6 +39,7 @@ public class PerkManager {
 
     public static void toggleActive(ItemStack stack, Player player) {
         Perk perk = Perk.getByIcon(stack);
+        if (perk == null) return;
         ItemMeta meta = stack.getItemMeta();
         List<String> lore = meta.getLore();
 

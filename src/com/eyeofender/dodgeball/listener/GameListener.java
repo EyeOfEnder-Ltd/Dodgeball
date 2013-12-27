@@ -18,6 +18,8 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.util.Vector;
 
 import com.eyeofender.dodgeball.Dodgeball;
@@ -39,7 +41,7 @@ public class GameListener implements Listener {
 
     private boolean isInGame(Player player) {
         Game game = plugin.getGame();
-        return game.contains(player) && game.getState() == State.IN_GAME;
+        return game.isPlayer(player) && game.getState() == State.IN_GAME;
     }
 
     private enum ProjectileType {
@@ -64,24 +66,26 @@ public class GameListener implements Listener {
         double health = defender.getHealth() - 2.0;
 
         String defenderName = plugin.getGame().getTeam(defender).getChatColour() + defender.getName();
-        String shooterName = plugin.getGame().getTeam(shooter).getChatColour() + defender.getName();
+        String shooterName = plugin.getGame().getTeam(shooter).getChatColour() + shooter.getName();
 
-        defender.sendMessage(ChatColor.RED + "You were hit by " + shooterName + ChatColor.RED + "!");
-        shooter.sendMessage(ChatColor.GREEN + "You hit " + defenderName + ChatColor.GREEN + "!");
-        Bukkit.broadcastMessage(defenderName + ChatColor.GRAY + " was hit by " + shooterName + ChatColor.GRAY + "!");
+        defender.sendMessage(ChatColor.RED + "You were hit by " + shooterName);
+        shooter.sendMessage(ChatColor.GREEN + "You hit " + defenderName);
+        Bukkit.broadcastMessage(defenderName + ChatColor.GRAY + " was hit by " + shooterName);
 
         if (ActivePerks.get(shooter).isActive(Perk.LIFE_GAINED_ON_HIT)) {
             double healthAfterGain = shooter.getHealth() + 2.0;
             shooter.setHealth(healthAfterGain > shooter.getMaxHealth() ? shooter.getMaxHealth() : healthAfterGain);
         }
 
-        defender.getWorld().createExplosion(defender.getLocation(), 0, false);
-
         if (health <= 0) {
-            Bukkit.broadcastMessage(ChatColor.AQUA + defender.getName() + " has been eliminated!");
-            plugin.getGame().removePlayer(defender);
+            defender.getWorld().strikeLightningEffect(defender.getLocation());
+            Bukkit.broadcastMessage(defenderName + " has been eliminated!");
+            Bukkit.broadcastMessage(ChatColor.AQUA + "" + (plugin.getGame().getPlayerCount() - 1) + " players remain!");
+
+            plugin.getGame().addSpectator(defender);
             return;
         } else {
+            defender.getWorld().createExplosion(defender.getLocation(), 0, false);
             defender.setHealth(health);
         }
 
@@ -138,6 +142,23 @@ public class GameListener implements Listener {
         }
 
         plugin.getGame().dropDodgeball(event.getEntity().getLocation());
+    }
+
+    @EventHandler
+    public void onPlayerMove(PlayerMoveEvent event) {
+        Player player = event.getPlayer();
+
+        if (plugin.getGame().isSpectator(player)) {
+            if (event.getTo().getY() != event.getFrom().getY()) {
+                event.setTo(event.getFrom());
+            }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerPickupItem(PlayerPickupItemEvent event) {
+        Player player = event.getPlayer();
+        if (plugin.getGame().isSpectator(player)) event.setCancelled(true);
     }
 
     private void launchAirstrike(LivingEntity shooter, Location target, int radiusX, int radiusZ) {

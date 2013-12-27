@@ -94,7 +94,7 @@ public class EventListener implements Listener {
         if (!canMove(player, event.getFrom(), event.getTo())) {
             Location newLoc = event.getFrom();
             newLoc.setX(newLoc.getBlockX() + 0.5);
-            newLoc.setY(newLoc.getBlockY());
+            newLoc.setY(newLoc.getY());
             newLoc.setZ(newLoc.getBlockZ() + 0.5);
             event.setTo(newLoc);
         }
@@ -103,7 +103,7 @@ public class EventListener implements Listener {
     private boolean canMove(Player player, Location from, Location to) {
         if (from.getWorld() != to.getWorld()) return true;
         if (from.getBlockX() == to.getBlockX() && from.getBlockY() == to.getBlockY() && from.getBlockZ() == to.getBlockZ()) return true;
-        if (plugin.getGame().getState() != State.IN_GAME) return true;
+        if (plugin.getGame().getState() != State.IN_GAME || plugin.getGame().isSpectator(player)) return true;
 
         return !plugin.getGame().getArena().isLocationInMidline(to);
     }
