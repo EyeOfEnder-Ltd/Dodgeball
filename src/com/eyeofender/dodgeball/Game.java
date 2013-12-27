@@ -165,7 +165,7 @@ public class Game {
     }
 
     private void startCountdown() {
-        if (getState() != State.WAITING) return;
+        if (getState() != State.WAITING || countdown.isRunning()) return;
 
         if (players.size() < 4 || getRemainingTeams().size() < 2) {
             Bukkit.broadcastMessage(ChatColor.AQUA + "The countdown will begin once " + (arena.getTeams().size() - players.size()) + " more players join!");
@@ -191,7 +191,6 @@ public class Game {
             entry.getValue().addPlayer(player);
         }
 
-        spawnDodgeball(null, false);
         timer.start();
         state = State.IN_GAME;
     }
