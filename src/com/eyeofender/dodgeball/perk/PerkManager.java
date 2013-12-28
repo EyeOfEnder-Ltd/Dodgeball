@@ -81,7 +81,7 @@ public class PerkManager {
         Perk[] perks = Perk.values();
 
         int slots = perks.length * 2 - 1;
-        Inventory menu = Bukkit.createInventory(null, (int) (Math.ceil(perks.length / 9.0) * 9.0), TITLE);
+        Inventory menu = Bukkit.createInventory(null, (int) (Math.ceil(slots / 9.0) * 9.0), TITLE);
 
         for (int i = 0; i < slots; i++) {
             if (i % 2 == 0) menu.setItem(i, getPerkIcon(player, perks[i / 2]));
