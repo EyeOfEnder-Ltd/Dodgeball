@@ -20,13 +20,9 @@ public enum Perk {
     STARTING_BALLS(new ItemStack(Material.SNOW_BALL), ChatColor.RESET + "Starting Balls", "Start round holding dodgeballs"),
     TRIPPLE_SHOTS(new ItemStack(Material.ENDER_PEARL), ChatColor.RESET + "Tripple Shots", "Start round with Triple-shot dodgeballs"),
     AIRSTRIKES(new ItemStack(Material.ARROW), ChatColor.RESET + "Airstrikes", "Start round with Airstrikes"),
-
-    BALL_BOOST(new ItemStack(Material.SLIME_BALL), ChatColor.GREEN + "Ball Boost", "+1 Dodgeball"),
     LIFE_BOOST(new Potion(PotionType.INSTANT_HEAL).toItemStack(1), ChatColor.GREEN + "Life Boost", "+1 Life"),
-
-    EXTRA_LIVES(new ItemStack(Material.CHAINMAIL_CHESTPLATE), ChatColor.LIGHT_PURPLE + "Extra Lives", "Start round with extra lives"),
+    EXTRA_LIFE(new ItemStack(Material.CHAINMAIL_CHESTPLATE), ChatColor.LIGHT_PURPLE + "Extra Life", "Start round with an extra life"),
     LIFE_GAINED_ON_HIT(new ItemStack(Material.SKULL_ITEM, 1, (short) 3), ChatColor.LIGHT_PURPLE + "Life Gained on Hit", "Gain lives by hitting enemies"),
-
     SPEED_BOOST(new ItemStack(Material.DIAMOND_BOOTS), ChatColor.AQUA + "Speed Boost", "Toggleable Super speed");
 
     private final ItemStack icon;

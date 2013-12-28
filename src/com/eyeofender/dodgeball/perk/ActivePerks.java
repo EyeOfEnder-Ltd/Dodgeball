@@ -24,7 +24,6 @@ public class ActivePerks {
     private boolean tripleShots;
     private boolean airstrikes;
     private boolean lifeBoost;
-    private boolean ballBoost;
     private boolean extraLives;
     private boolean lifeGainedOnHit;
     private boolean speedBoost;
@@ -44,9 +43,7 @@ public class ActivePerks {
         switch (perk) {
             case AIRSTRIKES:
                 return airstrikes;
-            case BALL_BOOST:
-                return ballBoost;
-            case EXTRA_LIVES:
+            case EXTRA_LIFE:
                 return extraLives;
             case LIFE_BOOST:
                 return lifeBoost;
@@ -68,10 +65,7 @@ public class ActivePerks {
             case AIRSTRIKES:
                 this.airstrikes = active;
                 break;
-            case BALL_BOOST:
-                this.ballBoost = active;
-                break;
-            case EXTRA_LIVES:
+            case EXTRA_LIFE:
                 this.extraLives = active;
                 break;
             case LIFE_BOOST:
@@ -121,10 +115,9 @@ public class ActivePerks {
         }
 
         if (lifeBoost) applyExpendable(Perk.LIFE_BOOST, Perk.LIFE_BOOST.getAmount(player), player);
-        if (ballBoost) applyExpendable(Perk.BALL_BOOST, Perk.BALL_BOOST.getAmount(player), player);
 
         if (extraLives) {
-            double newHealth = player.getHealth() + Perk.EXTRA_LIVES.getAmount(player) * 2.0;
+            double newHealth = player.getHealth() + Perk.EXTRA_LIFE.getAmount(player) * 2.0;
             if (newHealth > player.getMaxHealth()) player.setMaxHealth(newHealth);
             player.setHealth(newHealth);
         }
@@ -149,7 +142,6 @@ public class ActivePerks {
 
     public void disableAll() {
         this.lifeBoost = false;
-        this.ballBoost = false;
         this.airstrikes = false;
         this.tripleShots = false;
         this.startingBalls = false;

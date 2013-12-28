@@ -78,16 +78,14 @@ public class PerkManager {
     }
 
     public static Inventory getPerkMenu(Player player) {
-        Inventory menu = Bukkit.createInventory(null, 9, TITLE);
+        Perk[] perks = Perk.values();
 
-        menu.addItem(getPerkIcon(player, Perk.STARTING_BALLS));
-        menu.addItem(getPerkIcon(player, Perk.TRIPPLE_SHOTS));
-        menu.addItem(getPerkIcon(player, Perk.AIRSTRIKES));
-        menu.addItem(getPerkIcon(player, Perk.BALL_BOOST));
-        menu.addItem(getPerkIcon(player, Perk.LIFE_BOOST));
-        menu.addItem(getPerkIcon(player, Perk.EXTRA_LIVES));
-        menu.addItem(getPerkIcon(player, Perk.LIFE_GAINED_ON_HIT));
-        menu.addItem(getPerkIcon(player, Perk.SPEED_BOOST));
+        int slots = perks.length * 2 - 1;
+        Inventory menu = Bukkit.createInventory(null, (int) (Math.ceil(perks.length / 9.0) * 9.0), TITLE);
+
+        for (int i = 0; i < slots; i++) {
+            if (i % 2 == 0) menu.setItem(i, getPerkIcon(player, perks[i / 2]));
+        }
 
         return menu;
     }
