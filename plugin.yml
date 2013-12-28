@@ -1,6 +1,6 @@
 name: Dodgeball
 author: LimeByte
-version: 1.4.1
+version: 1.4.2
 description: Dodgeball minigame for the EOE arcade
 
 main: com.eyeofender.dodgeball.Dodgeball
@@ -11,15 +11,30 @@ commands:
     arena:
         description: Displays a list of arenas group by game stage.
         usage: /<command> <option> <args...>
+        permission: dodgeball.command.arena
         aliases: map
     team:
         description: Attempts to join the specified team.
         usage: /<command> <team>
+        permission: dodgeball.command.team
+        aliases: switchteam
     fstart:
         description: Forces the round in the provided arena to start.
         usage: /<command>
+        permission: dodgeball.command.fstart
         aliases: forcestart
     fstop:
         description: Forces the round in the provided arena to stop.
         usage: /<command>
+        permission: dodgeball.command.fstop
         aliases: forcestop
+
+permissions:
+    dodgeball.command.arena:
+        default: op
+    dodgeball.command.team:
+        default: true
+    dodgeball.command.fstart:
+        default: op
+    dodgeball.command.fstop:
+        default: op
