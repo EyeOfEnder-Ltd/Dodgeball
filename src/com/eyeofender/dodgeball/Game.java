@@ -227,8 +227,9 @@ public class Game {
                         player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
                         setTeam(player, null);
 
-                        if (!player.isOp() || player.getGameMode() != GameMode.CREATIVE) {
-                            removeSpectator(player);
+                        removeSpectator(player);
+
+                        if (!player.isOp()) {
                             Util.sendPM(player, "Connect", "hub");
                         }
                     }
@@ -243,6 +244,11 @@ public class Game {
                     clearDodgeballs();
                     state = State.RESTARTING;
                     setArena(next);
+
+                    for (Player player : Bukkit.getOnlinePlayers()) {
+                        if (player.isOp() && player.getGameMode() != GameMode.CREATIVE) addPlayer(player);
+                    }
+
                     cancel();
                 }
             }
