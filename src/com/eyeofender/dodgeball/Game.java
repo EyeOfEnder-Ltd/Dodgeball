@@ -329,6 +329,12 @@ public class Game {
             return;
         }
 
+        DodgeTeam old = getTeam(player);
+        if (old != null && old.equals(team)) {
+            player.sendMessage(ChatColor.RED + "You are already on that team!");
+            return;
+        }
+
         for (DodgeTeam t : arena.getTeams()) {
             int size = t.getPlayers();
 
@@ -348,7 +354,7 @@ public class Game {
     }
 
     public void setTeam(Player player, DodgeTeam team) {
-        DodgeTeam old = players.get(player.getName());
+        DodgeTeam old = getTeam(player);
         if (old != null) {
             old.removePlayer(player);
         }

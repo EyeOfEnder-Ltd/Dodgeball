@@ -52,6 +52,11 @@ public class DodgeTeam {
         return displayName.toLowerCase().replace(' ', '-');
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        return toString().equals(obj.toString());
+    }
+
     public String getDisplayName() {
         return displayName;
     }
