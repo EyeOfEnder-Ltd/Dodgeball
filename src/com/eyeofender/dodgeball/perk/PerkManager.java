@@ -20,11 +20,13 @@ public class PerkManager {
     private static final int STATE_LINE = 0;
     private static final int DESCRIPTION_LINE = 1;
 
+    private static final String FUTURE = ChatColor.YELLOW + "???";
     private static final String LOCKED = ChatColor.DARK_RED + "" + ChatColor.BOLD + "Locked";
     private static final String ENABLED = ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "Enabled";
     private static final String DISABLED = ChatColor.DARK_RED + "" + ChatColor.BOLD + "Disabled";
 
     private static ItemStack item;
+    private static final ItemStack PLACEHOLDER;
 
     static {
         item = new ItemStack(Material.NETHER_STAR, 1);
@@ -32,6 +34,12 @@ public class PerkManager {
         meta.setDisplayName(ChatColor.GOLD + "Perks");
         meta.setLore(ImmutableList.of("Click to open perk menu"));
         item.setItemMeta(meta);
+
+        PLACEHOLDER = new ItemStack(Material.IRON_BARDING, 1);
+        meta = PLACEHOLDER.getItemMeta();
+        meta.setDisplayName(ChatColor.MAGIC + "Future");
+        meta.setLore(ImmutableList.of(LOCKED, FUTURE));
+        PLACEHOLDER.setItemMeta(meta);
     }
 
     private PerkManager() {
@@ -81,10 +89,19 @@ public class PerkManager {
         Perk[] perks = Perk.values();
 
         int slots = perks.length * 2 - 1;
-        Inventory menu = Bukkit.createInventory(null, (int) (Math.ceil(slots / 9.0) * 9.0), TITLE);
+        int spaces = (int) (Math.ceil(slots / 9.0) * 9.0);
+        Inventory menu = Bukkit.createInventory(null, spaces, TITLE);
 
-        for (int i = 0; i < slots; i++) {
-            if (i % 2 == 0) menu.setItem(i, getPerkIcon(player, perks[i / 2]));
+        for (int i = 0; i < spaces; i++) {
+            if (i % 2 == 0) {
+                int index = i / 2;
+
+                if (index > perks.length) {
+                    menu.setItem(i, PLACEHOLDER.clone());
+                }
+
+                menu.setItem(i, getPerkIcon(player, perks[index]));
+            }
         }
 
         return menu;
