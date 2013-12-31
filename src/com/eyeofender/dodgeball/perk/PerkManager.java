@@ -96,7 +96,7 @@ public class PerkManager {
             if (i % 2 == 0) {
                 int index = i / 2;
 
-                if (index > perks.length) {
+                if (index >= perks.length) {
                     menu.setItem(i, PLACEHOLDER.clone());
                 }
 
