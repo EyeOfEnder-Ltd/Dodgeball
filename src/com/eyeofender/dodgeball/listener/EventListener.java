@@ -1,5 +1,6 @@
 package com.eyeofender.dodgeball.listener;
 
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -131,6 +132,9 @@ public class EventListener implements Listener {
         if (event.getPlayer().getGameMode() == event.getNewGameMode()) return;
         if (event.getNewGameMode() == GameMode.CREATIVE) {
             plugin.getGame().removePlayer(event.getPlayer(), false);
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                event.getPlayer().showPlayer(player);
+            }
         } else {
             plugin.getGame().addPlayer(event.getPlayer());
         }

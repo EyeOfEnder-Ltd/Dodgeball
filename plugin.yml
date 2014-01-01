@@ -1,6 +1,6 @@
 name: Dodgeball
 author: LimeByte
-version: 1.4.7
+version: 1.5.0
 description: Dodgeball minigame for the EOE arcade
 
 main: com.eyeofender.dodgeball.Dodgeball

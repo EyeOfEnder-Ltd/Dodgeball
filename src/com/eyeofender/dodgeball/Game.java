@@ -140,6 +140,11 @@ public class Game {
         if (!spectators.contains(player.getName())) return;
 
         player.setAllowFlight(false);
+
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            p.showPlayer(player);
+        }
+
         spectators.remove(player.getName());
     }
 
@@ -196,6 +201,7 @@ public class Game {
 
     public void stop() {
         if (state != State.IN_GAME) return;
+        state = State.RESTARTING;
 
         timer.stop();
 
@@ -242,9 +248,8 @@ public class Game {
                     spectators.clear();
 
                     clearDodgeballs();
-                    state = State.RESTARTING;
+
                     setArena(next);
-                    if (state != State.DISABLED) state = State.RESTARTING;
 
                     for (Player player : Bukkit.getOnlinePlayers()) {
                         if (player.isOp() && player.getGameMode() == GameMode.CREATIVE) continue;
@@ -254,8 +259,6 @@ public class Game {
                             addPlayer(player);
                         }
                     }
-
-                    state = State.WAITING;
 
                     cancel();
                 }

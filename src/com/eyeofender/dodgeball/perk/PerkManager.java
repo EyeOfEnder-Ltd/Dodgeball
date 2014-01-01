@@ -20,7 +20,6 @@ public class PerkManager {
     private static final int STATE_LINE = 0;
     private static final int DESCRIPTION_LINE = 1;
 
-    private static final String FUTURE = ChatColor.YELLOW + "???";
     private static final String LOCKED = ChatColor.DARK_RED + "" + ChatColor.BOLD + "Locked";
     private static final String ENABLED = ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "Enabled";
     private static final String DISABLED = ChatColor.DARK_RED + "" + ChatColor.BOLD + "Disabled";
@@ -37,8 +36,8 @@ public class PerkManager {
 
         PLACEHOLDER = new ItemStack(Material.IRON_BARDING, 1);
         meta = PLACEHOLDER.getItemMeta();
-        meta.setDisplayName(ChatColor.MAGIC + "Future");
-        meta.setLore(ImmutableList.of(LOCKED, FUTURE));
+        meta.setDisplayName(ChatColor.MAGIC + "Future Item");
+        meta.setLore(ImmutableList.of(LOCKED));
         PLACEHOLDER.setItemMeta(meta);
     }
 
@@ -98,6 +97,7 @@ public class PerkManager {
 
                 if (index >= perks.length) {
                     menu.setItem(i, PLACEHOLDER.clone());
+                    continue;
                 }
 
                 menu.setItem(i, getPerkIcon(player, perks[index]));
