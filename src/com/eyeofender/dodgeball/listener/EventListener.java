@@ -133,7 +133,7 @@ public class EventListener implements Listener {
         if (event.getNewGameMode() == GameMode.CREATIVE) {
             plugin.getGame().removePlayer(event.getPlayer(), false);
             for (Player player : Bukkit.getOnlinePlayers()) {
-                event.getPlayer().showPlayer(player);
+                if (!plugin.getGame().isSpectator(player)) event.getPlayer().showPlayer(player);
             }
         } else {
             plugin.getGame().addPlayer(event.getPlayer());

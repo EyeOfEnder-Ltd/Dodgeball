@@ -49,12 +49,17 @@ public class Menu {
         eye.setItemMeta(meta);
 
         StringBuilder helpContents = new StringBuilder();
-        String heading = "  -=-=- " + ChatColor.DARK_RED + ChatColor.BOLD + "Dodgeball" + ChatColor.RESET + " -=-=-\n\n";
+        String heading = "  -=- " + ChatColor.DARK_RED + ChatColor.BOLD + "Dodgeball" + ChatColor.RESET + ChatColor.BLACK + " -=-\n\n";
         helpContents.append(heading);
         helpContents.append("        " + ChatColor.UNDERLINE + "Gameplay" + ChatColor.RESET + "\n");
+        helpContents.append("The main objective of the game is to make sure your team stays alive the longest. ");
+        helpContents.append("Players are given 3 lives to start with plus an extra life if you are a member and/or if you have the Extra Life perk. ");
+        helpContents.append("// TODO");
         helpContents.append("<pagebreak>");
         helpContents.append(heading);
         helpContents.append("          " + ChatColor.UNDERLINE + "Perks" + ChatColor.RESET + "\n");
+        helpContents.append("Perks can be accessed by right clicking with the perk menu item (Nether Star) while you are in the lobby. ");
+        helpContents.append("From there you can enable/disable perks that you have purchased from the online shop.");
 
         book = new ItemStack(Material.WRITTEN_BOOK, 1);
         BookMeta bookMeta = (BookMeta) book.getItemMeta();
@@ -109,6 +114,7 @@ public class Menu {
             event.setResult(Result.DENY);
         } else if (item.isSimilar(eye)) {
             player.closeInventory();
+            player.openInventory(serverMenu);
         } else if (item.isSimilar(book)) {
             player.closeInventory();
         }
