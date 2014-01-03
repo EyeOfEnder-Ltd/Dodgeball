@@ -20,6 +20,7 @@ public class PerkManager {
     private static final int STATE_LINE = 0;
     private static final int DESCRIPTION_LINE = 1;
 
+    private static final String UNAVAILABLE = ChatColor.DARK_RED + "" + ChatColor.BOLD + "Unavailable";
     private static final String LOCKED = ChatColor.DARK_RED + "" + ChatColor.BOLD + "Locked";
     private static final String ENABLED = ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "Enabled";
     private static final String DISABLED = ChatColor.DARK_RED + "" + ChatColor.BOLD + "Disabled";
@@ -34,10 +35,10 @@ public class PerkManager {
         meta.setLore(ImmutableList.of("Click to open perk menu"));
         item.setItemMeta(meta);
 
-        PLACEHOLDER = new ItemStack(Material.IRON_BARDING, 1);
+        PLACEHOLDER = new ItemStack(Material.IRON_FENCE, 1);
         meta = PLACEHOLDER.getItemMeta();
-        meta.setDisplayName(ChatColor.MAGIC + "Future Item");
-        meta.setLore(ImmutableList.of(LOCKED));
+        meta.setDisplayName(ChatColor.MAGIC + "");
+        meta.setLore(ImmutableList.of(UNAVAILABLE));
         PLACEHOLDER.setItemMeta(meta);
     }
 
@@ -52,6 +53,9 @@ public class PerkManager {
 
         if (lore.get(STATE_LINE).equals(LOCKED)) {
             player.sendMessage(ChatColor.RED + "This perk is locked.  Visit http://eyeofender.com/shop to purchase it.");
+            return;
+        } else if (lore.get(STATE_LINE).equals(UNAVAILABLE)) {
+            player.sendMessage(ChatColor.RED + "This perk is currently unavailable for purchase.");
             return;
         }
 
@@ -70,7 +74,7 @@ public class PerkManager {
         int amount = perk.getAmount(player);
 
         List<String> lore = new ArrayList<String>();
-        lore.add(STATE_LINE, amount > 0 ? (ActivePerks.get(player).isActive(perk) ? ENABLED : DISABLED) : LOCKED);
+        lore.add(STATE_LINE, amount > 0 ? (ActivePerks.get(player).isActive(perk) ? ENABLED : DISABLED) : perk.isOnSale() ? LOCKED : UNAVAILABLE);
         lore.add(DESCRIPTION_LINE, ChatColor.YELLOW + perk.getDescription());
 
         if (amount > 0) stack.setAmount(amount);

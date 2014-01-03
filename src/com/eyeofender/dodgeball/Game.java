@@ -90,8 +90,7 @@ public class Game {
 
         player.setLevel(0);
         player.setExp(0);
-        player.setMaxHealth(10.0);
-        player.setHealth(plugin.getApi().getRankManager().hasRank(player) ? 8.0 : 6.0);
+        ActivePerks.get(player).updateHealth(player);
         player.setFoodLevel(20);
         updateLives(player);
 
@@ -234,10 +233,6 @@ public class Game {
                         setTeam(player, null);
 
                         removeSpectator(player);
-
-                        if (!player.isOp()) {
-                            Util.sendPM(player, "Connect", "hub");
-                        }
                     }
 
                     for (DodgeTeam team : arena.getTeams()) {

@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -78,6 +79,7 @@ public class GameListener implements Listener {
         }
 
         if (health <= 0) {
+            shooter.playSound(shooter.getLocation(), Sound.LEVEL_UP, 1f, 1f);
             defender.getWorld().strikeLightningEffect(defender.getLocation());
             Bukkit.broadcastMessage(defenderName + " has been eliminated!");
             Bukkit.broadcastMessage(ChatColor.AQUA + "" + (plugin.getGame().getPlayerCount() - 1) + " players remain!");
@@ -85,6 +87,7 @@ public class GameListener implements Listener {
             plugin.getGame().addSpectator(defender, false);
             return;
         } else {
+            shooter.playSound(shooter.getLocation(), Sound.ARROW_HIT, 1f, 10f);
             defender.getWorld().createExplosion(defender.getLocation(), 0, false);
             defender.setHealth(health);
         }

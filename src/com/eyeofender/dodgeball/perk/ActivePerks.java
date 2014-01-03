@@ -13,6 +13,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import com.eyeofender.dodgeball.Arena;
+import com.eyeofender.dodgeball.Dodgeball;
 
 public class ActivePerks {
 
@@ -24,19 +25,22 @@ public class ActivePerks {
     private boolean tripleShots;
     private boolean airstrikes;
     private boolean lifeBoost;
-    private boolean extraLives;
+    private boolean extraLife;
     private boolean lifeGainedOnHit;
     private boolean speedBoost;
 
-    public ActivePerks(String name) {
-        this.name = name;
+    public ActivePerks(Player player) {
+        this.name = player.getName();
         disableAll();
+        for (Perk perk : Perk.values()) {
+            if (perk.getAmount(player) > 0) setActive(perk, true);
+        }
         activePerks.put(name, this);
     }
 
     public static ActivePerks get(Player player) {
         ActivePerks perks = activePerks.get(player.getName());
-        return perks != null ? perks : new ActivePerks(player.getName());
+        return perks != null ? perks : new ActivePerks(player);
     }
 
     public boolean isActive(Perk perk) {
@@ -44,7 +48,7 @@ public class ActivePerks {
             case AIRSTRIKES:
                 return airstrikes;
             case EXTRA_LIFE:
-                return extraLives;
+                return extraLife;
             case LIFE_BOOST:
                 return lifeBoost;
             case LIFE_GAINED_ON_HIT:
@@ -61,12 +65,15 @@ public class ActivePerks {
     }
 
     public void setActive(Perk perk, boolean active) {
+        Player player = Bukkit.getPlayerExact(name);
+
         switch (perk) {
             case AIRSTRIKES:
                 this.airstrikes = active;
                 break;
             case EXTRA_LIFE:
-                this.extraLives = active;
+                this.extraLife = active;
+                if (player != null) updateHealth(player);
                 break;
             case LIFE_BOOST:
                 this.lifeBoost = active;
@@ -110,17 +117,13 @@ public class ActivePerks {
 
         if (airstrikes) {
             ItemStack ball = FiringMode.AIRSTRIKE.getDodgeball();
-            ball.setAmount(Perk.AIRSTRIKES.getAmount(player));
+            ball.setAmount(Perk.AIRSTRIKES.getAmount(player) * 3);
             player.getInventory().addItem(ball);
         }
 
         if (lifeBoost) applyExpendable(Perk.LIFE_BOOST, Perk.LIFE_BOOST.getAmount(player), player);
 
-        if (extraLives) {
-            double newHealth = player.getHealth() + Perk.EXTRA_LIFE.getAmount(player) * 2.0;
-            if (newHealth > player.getMaxHealth()) player.setMaxHealth(newHealth);
-            player.setHealth(newHealth);
-        }
+        updateHealth(player);
 
         if (speedBoost) {
             ItemStack speedMode = new ItemStack(Material.DIAMOND_BOOTS, 1);
@@ -134,6 +137,15 @@ public class ActivePerks {
         }
     }
 
+    public void updateHealth(Player player) {
+        player.setMaxHealth(10.0);
+        double health = 6.0;
+        if (Dodgeball.getInstance().getApi().getRankManager().hasRank(player)) health += 2.0;
+        if (isActive(Perk.EXTRA_LIFE)) health += Perk.EXTRA_LIFE.getAmount(player) * 2.0;
+        if (health > player.getMaxHealth()) player.setMaxHealth(health);
+        player.setHealth(health);
+    }
+
     private static void applyExpendable(Perk perk, int amount, Player player) {
         ItemStack stack = perk.getMenuIcon();
         stack.setAmount(amount);
@@ -145,7 +157,7 @@ public class ActivePerks {
         this.airstrikes = false;
         this.tripleShots = false;
         this.startingBalls = false;
-        this.extraLives = false;
+        this.extraLife = false;
         this.lifeGainedOnHit = false;
         this.speedBoost = false;
     }

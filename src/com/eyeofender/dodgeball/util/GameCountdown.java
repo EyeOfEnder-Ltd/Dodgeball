@@ -2,6 +2,8 @@ package com.eyeofender.dodgeball.util;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -52,6 +54,8 @@ public class GameCountdown {
             Bukkit.broadcastMessage(ChatColor.AQUA + "Game starting in " + builder.toString() + "!");
         } else if (time <= 15) {
             Bukkit.broadcastMessage(ChatColor.AQUA + "Game starting in " + time + "!");
+            Location source = Bukkit.getWorlds().get(0).getSpawnLocation();
+            source.getWorld().playSound(source, Sound.NOTE_PLING, 10f, 10f);
         }
     }
 

@@ -1,7 +1,6 @@
 package com.eyeofender.dodgeball.util;
 
-import java.util.ArrayList;
-
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -13,9 +12,12 @@ import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import com.eyeofender.dodgeball.perk.PerkManager;
+import com.eyeofender.enderpearl.Util;
+import com.google.common.collect.ImmutableList;
 
 public class Menu {
 
@@ -26,6 +28,9 @@ public class Menu {
     public static ItemStack star;
     public static ItemStack eye;
     public static ItemStack book;
+
+    private static Inventory serverMenu;
+    private static ItemStack hub;
 
     static {
         ItemMeta meta;
@@ -40,15 +45,30 @@ public class Menu {
         eye = new ItemStack(Material.EYE_OF_ENDER, 1);
         meta = eye.getItemMeta();
         meta.setDisplayName(ChatColor.DARK_GREEN + "EOE Servers");
-        ArrayList<String> Lore = new ArrayList<String>();
-        Lore.add("Click to pick server");
-        meta.setLore(Lore);
+        meta.setLore(ImmutableList.of("Click to pick server"));
         eye.setItemMeta(meta);
 
+        StringBuilder helpContents = new StringBuilder();
+        String heading = "  -=-=- " + ChatColor.DARK_RED + ChatColor.BOLD + "Dodgeball" + ChatColor.RESET + " -=-=-\n\n";
+        helpContents.append(heading);
+        helpContents.append("        " + ChatColor.UNDERLINE + "Gameplay" + ChatColor.RESET + "\n");
+        helpContents.append("<pagebreak>");
+        helpContents.append(heading);
+        helpContents.append("          " + ChatColor.UNDERLINE + "Perks" + ChatColor.RESET + "\n");
+
         book = new ItemStack(Material.WRITTEN_BOOK, 1);
-        meta = book.getItemMeta();
-        meta.setDisplayName(ChatColor.GOLD + "Help");
-        book.setItemMeta(meta);
+        BookMeta bookMeta = (BookMeta) book.getItemMeta();
+        bookMeta.setDisplayName(ChatColor.GOLD + "Help");
+        bookMeta.addPage(helpContents.toString().split("<pagebreak>"));
+        book.setItemMeta(bookMeta);
+
+        serverMenu = Bukkit.createInventory(null, 9, "      -=-=- Servers -=-=-");
+        hub = new ItemStack(Material.EYE_OF_ENDER, 1);
+        meta = hub.getItemMeta();
+        meta.setDisplayName(ChatColor.DARK_GREEN + "Hub");
+        meta.setLore(ImmutableList.of("Click to join server"));
+        hub.setItemMeta(meta);
+        serverMenu.setItem(4, hub);
     }
 
     public static void apply(Player player) {
@@ -97,6 +117,10 @@ public class Menu {
         if (inv != null && type == SlotType.CONTAINER) {
             if (inv.getTitle().equals(PerkManager.TITLE)) {
                 PerkManager.toggleActive(item, player);
+            } else if (inv.getTitle().equals(serverMenu.getTitle())) {
+                if (item.isSimilar(hub)) {
+                    Util.sendPM(player, "Connect", "hub");
+                }
             }
         }
     }
