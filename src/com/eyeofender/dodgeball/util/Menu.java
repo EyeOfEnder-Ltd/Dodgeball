@@ -143,6 +143,7 @@ public class Menu {
             player.openInventory(PerkManager.getPerkMenu(player));
             event.setCancelled(true);
         } else if (item.isSimilar(eye)) {
+            player.openInventory(serverMenu);
             event.setCancelled(true);
         }
     }
