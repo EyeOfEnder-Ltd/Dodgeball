@@ -105,7 +105,7 @@ public class ActivePerks {
 
         if (startingBalls) {
             ItemStack ball = FiringMode.STANDARD.getDodgeball();
-            ball.setAmount(Perk.STARTING_BALLS.getAmount(player));
+            ball.setAmount(Perk.STARTING_BALLS.getAmount(player) * 3);
             player.getInventory().addItem(ball);
         }
 
@@ -117,7 +117,7 @@ public class ActivePerks {
 
         if (airstrikes) {
             ItemStack ball = FiringMode.AIRSTRIKE.getDodgeball();
-            ball.setAmount(Perk.AIRSTRIKES.getAmount(player) * 3);
+            ball.setAmount(Perk.AIRSTRIKES.getAmount(player));
             player.getInventory().addItem(ball);
         }
 
