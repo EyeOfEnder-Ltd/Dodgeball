@@ -69,8 +69,8 @@ public class GameListener implements Listener {
         String defenderName = plugin.getGame().getTeam(defender).getChatColour() + defender.getName();
         String shooterName = plugin.getGame().getTeam(shooter).getChatColour() + shooter.getName();
 
-        defender.sendMessage(ChatColor.RED + "You were hit by " + shooterName);
-        shooter.sendMessage(ChatColor.GREEN + "You hit " + defenderName);
+        Dodgeball.sendMessage(defender, ChatColor.RED + "You were hit by " + shooterName);
+        Dodgeball.sendMessage(shooter, ChatColor.GREEN + "You hit " + defenderName);
         Bukkit.broadcastMessage(defenderName + ChatColor.GRAY + " was hit by " + shooterName);
 
         if (ActivePerks.get(shooter).isActive(Perk.LIFE_GAINED_ON_HIT)) {
@@ -81,8 +81,10 @@ public class GameListener implements Listener {
         if (health <= 0) {
             shooter.playSound(shooter.getLocation(), Sound.LEVEL_UP, 1f, 1f);
             defender.getWorld().strikeLightningEffect(defender.getLocation());
-            Bukkit.broadcastMessage(defenderName + " has been eliminated!");
-            Bukkit.broadcastMessage(ChatColor.AQUA + "" + (plugin.getGame().getPlayerCount() - 1) + " players remain!");
+            for(Player player : Bukkit.getOnlinePlayers()){
+            	Dodgeball.sendMessage(player, defenderName + " has been eliminated!");
+            	Dodgeball.sendMessage(player, ChatColor.RED + "" + (plugin.getGame().getPlayerCount() - 1) + " players remain!");
+            }
 
             plugin.getGame().addSpectator(defender, false);
             return;
@@ -139,7 +141,9 @@ public class GameListener implements Listener {
         ProjectileType type = trackedProjectiles.remove(event.getEntity().getUniqueId());
         if (type == ProjectileType.DOOMED) return;
         if (type == ProjectileType.AIRSTRIKE) {
-            Bukkit.broadcastMessage("" + ChatColor.RED + ChatColor.ITALIC + "Airstrike inbound!");
+            for(Player players : Bukkit.getOnlinePlayers()){
+            	Dodgeball.sendMessage(players, "" + ChatColor.RED + ChatColor.BOLD + ChatColor.ITALIC + "Airstrike Inbound!");
+            }
             launchAirstrike(player, event.getEntity().getLocation(), 3, 3);
             return;
         }

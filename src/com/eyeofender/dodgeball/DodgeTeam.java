@@ -36,6 +36,7 @@ public class DodgeTeam {
     private String displayName;
     private ChatColor chatColour;
     private Color colour;
+    private List<Player> gamePlayers = new ArrayList<Player>();
     private int players;
 
     private DodgeTeam(String displayName, ChatColor chatColour, Color colour) {
@@ -94,10 +95,13 @@ public class DodgeTeam {
         armour.setItemMeta(meta);
         player.getInventory().setBoots(armour);
 
+        gamePlayers.add(player);
+        
         players++;
     }
 
     public void removePlayer(Player player) {
+        gamePlayers.remove(player);
         players--;
     }
 
@@ -116,5 +120,13 @@ public class DodgeTeam {
     public static List<DodgeTeam> getTeams() {
         return new ArrayList<DodgeTeam>(BY_NAME.values());
     }
+
+	public List<Player> getGamePlayers() {
+		return gamePlayers;
+	}
+
+	public void setGamePlayers(List<Player> gamePlayers) {
+		this.gamePlayers = gamePlayers;
+	}
 
 }

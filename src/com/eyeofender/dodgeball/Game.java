@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 
+import me.avery246813579.universalcredits.UniversalCredits;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -20,7 +22,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
@@ -58,9 +59,6 @@ public class Game {
         this.spectators = Lists.newArrayList();
 
         this.scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
-        this.lives = scoreboard.registerNewObjective("lives", "dummy");
-        lives.setDisplaySlot(DisplaySlot.BELOW_NAME);
-        lives.setDisplayName(ChatColor.RED + "\u2764");
 
         this.countdown = new GameCountdown(plugin, 120);
         this.timer = new GameTimer(plugin, 60 * 5);
@@ -75,7 +73,7 @@ public class Game {
         if (arena == null) setArena(Arena.getRandom());
 
         if (state == State.DISABLED) {
-            player.sendMessage(ChatColor.RED + "No arenas exist.");
+            Dodgeball.sendMessage(player, ChatColor.RED + "No arenas exist.");
             return;
         }
 
@@ -97,15 +95,19 @@ public class Game {
         if (state == State.WAITING || state == State.STARTING) {
             assignTeam(player);
             player.teleport(arena.getLobby());
+            Dodgeball.broadcastMessage(ChatColor.BLUE + player.getName() + " has joined the game. (" + Bukkit.getOnlinePlayers().length + "/" + Bukkit.getMaxPlayers() + ")");
 
             startCountdown();
         } else {
             addSpectator(player, true);
-            player.sendMessage(ChatColor.AQUA + "You are a spectator for the remainder of the game.");
+            Dodgeball.sendMessage(player, ChatColor.AQUA + "You are a spectator for the remainder of the game.");
         }
     }
 
     public void removePlayer(Player player, boolean kick) {
+    	if(!(state == State.IN_GAME))
+    		Dodgeball.broadcastMessage(ChatColor.RED + player.getName() + " has left the game. (" + Bukkit.getOnlinePlayers().length + "/" + Bukkit.getMaxPlayers() + ")");
+    	
         if (!players.containsKey(player.getName())) return;
         player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
         setTeam(player, null);
@@ -171,7 +173,6 @@ public class Game {
         if (getState() != State.WAITING || countdown.isRunning()) return;
 
         if (players.size() < 4 || getRemainingTeams().size() < 2) {
-            Bukkit.broadcastMessage(ChatColor.AQUA + "The countdown will begin once " + (arena.getTeams().size() - players.size()) + " more players join!");
             return;
         }
 
@@ -180,6 +181,19 @@ public class Game {
     }
 
     public void start() {
+		for(Player player : Bukkit.getOnlinePlayers()){
+			player.sendMessage(ChatColor.GOLD + "-=- -=-=- -=-=-=- -=-==- -=-=-=- -=-=- -=-");
+			player.sendMessage("");
+			player.sendMessage(ChatColor.BLUE + "Gamemode: " + ChatColor.GRAY + "Dodgeball");
+			player.sendMessage("");
+			player.sendMessage(ChatColor.LIGHT_PURPLE + "Map: " + ChatColor.GRAY + arena.getName());
+			player.sendMessage(ChatColor.GREEN + "Creator: " + ChatColor.GRAY + "Eye Of Ender Staff");
+			player.sendMessage("");
+			player.sendMessage(ChatColor.RED + "Plugin by: " + ChatColor.GRAY + "Avery246813579, Limebyte, LinearLogic ");
+			player.sendMessage(ChatColor.GOLD + "-=- -=-=- -=-=-=- -=-=- -=-=-=- -=-=- -=-");
+		}
+
+    	
         if (state != State.WAITING && state != State.STARTING) return;
 
         if (countdown.isRunning()) countdown.stop();
@@ -207,9 +221,30 @@ public class Game {
         List<DodgeTeam> teams = getRemainingTeams();
 
         if (teams.size() == 1) {
-            Bukkit.broadcastMessage(teams.get(0).getChatColour() + teams.get(0).getDisplayName() + ChatColor.GOLD + " team won the game!");
+        	for(Player player : Bukkit.getOnlinePlayers()){
+        		Dodgeball.sendMessage(player, teams.get(0).getChatColour() + teams.get(0).getDisplayName() + ChatColor.GOLD + " team won the game!");
+        		for(Player players : teams.get(0).getGamePlayers()){
+        			UniversalCredits.getApi().pay(players.getName(), 10, false);
+        			
+        			players.sendMessage("");
+        			players.sendMessage("");
+        			players.sendMessage(ChatColor.GOLD + "-=- -=-=- -=-=-=- -=-=- -=-");
+        			players.sendMessage("");
+					Dodgeball.sendMessage(player , "You have received 100 Credits for winning the game!");
+        			players.sendMessage("");
+					if( player.isOp() || plugin.getApi().getRankManager().hasRank(player)){
+						player.sendMessage("");
+						Dodgeball.sendMessage(player, "You have received a bonus of " + (10) + " Credits for being a donator." );
+	        			UniversalCredits.getApi().pay(players.getName(), 10, false);
+					}
+					player.sendMessage("");
+					player.sendMessage(ChatColor.GOLD + "-=- -=-=- -=-=-=- -=-=- -=-");
+        		}
+        	}
         } else {
-            Bukkit.broadcastMessage(ChatColor.GOLD + "Draw!");
+        	for(Player player : Bukkit.getOnlinePlayers()){
+        		Dodgeball.sendMessage(player, "The game is a tie!");
+        	}        
         }
 
         final Arena next = Arena.getRandom();
@@ -318,18 +353,18 @@ public class Game {
         int largest = 0;
 
         if (state != State.WAITING && state != State.STARTING) {
-            player.sendMessage(ChatColor.RED + "You cannot switch teams mid-game!");
+            Dodgeball.sendMessage(player, ChatColor.RED + "You cannot switch teams mid-game!");
             return;
         }
 
         if (!arena.getTeams().contains(team)) {
-            player.sendMessage(ChatColor.RED + "Invalid team!");
+            Dodgeball.sendMessage(player, ChatColor.RED + "Invalid team!");
             return;
         }
 
         DodgeTeam old = getTeam(player);
         if (old != null && old.equals(team)) {
-            player.sendMessage(ChatColor.RED + "You are already on that team!");
+            Dodgeball.sendMessage(player, ChatColor.RED + "You are already on that team!");
             return;
         }
 
@@ -344,7 +379,7 @@ public class Game {
         }
 
         if ((largest - smallest) > 2) {
-            player.sendMessage(ChatColor.RED + "You cannot join this team or they will become unbalanced!");
+            Dodgeball.sendMessage(player, ChatColor.RED + "You cannot join this team or they will become unbalanced!");
             return;
         }
 
@@ -377,7 +412,7 @@ public class Game {
             t.setPrefix(team.getChatColour() + "");
         }
         t.addPlayer(player);
-        player.sendMessage(ChatColor.AQUA + "You are on team " + team.getChatColour() + team.getDisplayName());
+        Dodgeball.sendMessage(player, ChatColor.AQUA + "You are on team " + team.getChatColour() + team.getDisplayName());
     }
 
     public List<DodgeTeam> getRemainingTeams() {
@@ -406,7 +441,11 @@ public class Game {
         dropLoc.getWorld().playEffect(dropLoc, Effect.ENDER_SIGNAL, 4);
         dropLoc.getWorld().playEffect(dropLoc.add(0, 0.5, 0), Effect.ENDER_SIGNAL, 4);
         dropLoc.getWorld().playEffect(dropLoc.add(0, 0.5, 0), Effect.ENDER_SIGNAL, 4);
-        if (!silently) Bukkit.broadcastMessage(ChatColor.GRAY + "A new dodgeball has entered gameplay!");
+        if (!silently){
+        	for(Player player : Bukkit.getOnlinePlayers()){
+        		Dodgeball.sendMessage(player, "A new dodgeball has entered the arena.");
+        	}
+        }
         ballCount++;
     }
 
@@ -476,5 +515,13 @@ public class Game {
             return motd;
         }
     }
+
+	public Scoreboard getScoreboard() {
+		return scoreboard;
+	}
+
+	public void setScoreboard(Scoreboard scoreboard) {
+		this.scoreboard = scoreboard;
+	}
 
 }

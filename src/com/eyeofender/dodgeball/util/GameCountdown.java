@@ -51,9 +51,9 @@ public class GameCountdown {
                 if (seconds != 1) builder.append("s");
             }
 
-            Bukkit.broadcastMessage(ChatColor.AQUA + "Game starting in " + builder.toString() + "!");
+            Dodgeball.broadcastMessage(ChatColor.AQUA + "Game starting in " + builder.toString() + "!");
         } else if (time <= 15) {
-            Bukkit.broadcastMessage(ChatColor.AQUA + "Game starting in " + time + "!");
+        	Dodgeball.broadcastMessage(ChatColor.AQUA + "Game starting in " + time + "!");
             Location source = Bukkit.getWorlds().get(0).getSpawnLocation();
             source.getWorld().playSound(source, Sound.NOTE_PLING, 10f, 10f);
         }

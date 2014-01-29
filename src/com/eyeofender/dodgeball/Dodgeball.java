@@ -2,6 +2,9 @@ package com.eyeofender.dodgeball;
 
 import java.util.logging.Logger;
 
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -61,6 +64,16 @@ public class Dodgeball extends JavaPlugin {
 
     public static Dodgeball getInstance() {
         return instance;
+    }
+    
+    public static void sendMessage(Player player, String message){
+    	player.sendMessage(ChatColor.GREEN + "< " + ChatColor.GOLD + "DB" + ChatColor.GREEN + " > " + ChatColor.GRAY + message);
+    }
+    
+    public static void broadcastMessage(String message){
+    	for(Player player : Bukkit.getOnlinePlayers()){
+    		player.sendMessage(ChatColor.GREEN + "< " + ChatColor.GOLD + "DB" + ChatColor.GREEN + " > " + ChatColor.GRAY + message);
+    	}
     }
 
     public Logger log() {

@@ -58,9 +58,9 @@ public class ArenaCommand implements CommandExecutor {
                 if (args.length > 3) {
                     if (args[3].equalsIgnoreCase("cancel")) {
                         if (arena.clearPendingLocation(player)) {
-                            player.sendMessage(ChatColor.GREEN + "You you have no pending line postitions in that arena!");
+                            Dodgeball.sendMessage(player,ChatColor.GREEN + "You you have no pending line postitions in that arena!");
                         } else {
-                            player.sendMessage(ChatColor.RED + "Cleared your pending line position for arena: " + arena.getName());
+                            Dodgeball.sendMessage(player,ChatColor.RED + "Cleared your pending line position for arena: " + arena.getName());
                         }
                         return true;
                     }
@@ -68,10 +68,10 @@ public class ArenaCommand implements CommandExecutor {
                 }
 
                 if (arena.addPendingLocation(player)) {
-                    player.sendMessage(ChatColor.GREEN + "You have added a new boundary line to the arena: " + arena.getName());
+                    Dodgeball.sendMessage(player,ChatColor.GREEN + "You have added a new boundary line to the arena: " + arena.getName());
                 } else {
-                    player.sendMessage(ChatColor.GREEN + "Set the first position for a boundary in arena " + arena.getName() + ".");
-                    player.sendMessage(ChatColor.GREEN + "Repeat for a second position, or clear your pending position with '/arena set " + arena.getName() + " line cancel'.");
+                    Dodgeball.sendMessage(player,ChatColor.GREEN + "Set the first position for a boundary in arena " + arena.getName() + ".");
+                    Dodgeball.sendMessage(player,ChatColor.GREEN + "Repeat for a second position, or clear your pending position with '/arena set " + arena.getName() + " line cancel'.");
                 }
                 return true;
             } else if (args[2].equalsIgnoreCase("active")) {
